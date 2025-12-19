@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D4H Training Report Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <!-- html2pdf for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- PapaParse for CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>D4H Training Report Generator</h1>
+            <p>NZRT Capability Framework Assessment Tool</p>
+        </header>
+
+        <!-- Upload Section -->
+        <section class="upload-section">
+            <div class="upload-box">
+                <h2>Upload Training Data</h2>
+                <div class="file-input-wrapper">
+                    <input
+                        type="file"
+                        id="csvFile"
+                        accept=".csv"
+                        class="file-input"
+                    >
+                    <label for="csvFile" class="file-label">
+                        <span class="upload-icon">📁</span>
+                        <span class="upload-text">Click to select CSV file or drag and drop</span>
+                    </label>
+                </div>
+                <div id="uploadStatus" class="upload-status"></div>
+            </div>
+        </section>
+
+        <!-- Controls Section -->
+        <section id="controlsSection" class="controls-section" style="display: none;">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="strandFilter">Filter by Capability Strand:</label>
+                    <select id="strandFilter" class="filter-select">
+                        <option value="">All Strands</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="statusFilter">Filter by Personnel Status:</label>
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="Operational">Operational</option>
+                        <option value="Non-operational">Non-operational</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="qualifiedFilter">Filter by Qualification:</label>
+                    <select id="qualifiedFilter" class="filter-select">
+                        <option value="">All</option>
+                        <option value="qualified">Qualified</option>
+                        <option value="notQualified">Not Qualified</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search by name or course code..."
+                        class="search-input"
+                    >
+                </div>
+                <div class="control-group">
+                    <button id="exportPdfBtn" class="btn btn-primary">📥 Export PDF</button>
+                    <button id="printBtn" class="btn btn-secondary">🖨️ Print</button>
+                    <button id="resetBtn" class="btn btn-secondary">Reset Filters</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary Metrics -->
+        <section id="summarySection" class="summary-section" style="display: none;">
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="metric-label">Total Personnel</div>
+                    <div class="metric-value" id="totalPersonnel">0</div>
+                </div>
+                <div class="summary-card">
+                    <div class="metric-label">Operational</div>
+                    <div class="metric-value metric-operational" id="operationalCount">0</div>
+                </div>
+                <div class="summary-card">
+                    <div class="metric-label">Strands Available</div>
+                    <div class="metric-value" id="strandsCount">0</div>
+                </div>
+                <div class="summary-card">
+                    <div class="metric-label">Expiring (90 days)</div>
+                    <div class="metric-value metric-warning" id="expiringCount">0</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section id="chartsSection" class="charts-section" style="display: none;">
+            <h2>Overview</h2>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Personnel by Status</h3>
+                    <canvas id="statusChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Readiness by Capability Strand</h3>
+                    <canvas id="readinessChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Capability Strands Reports Section -->
+        <section id="strandsReportSection" class="strands-report-section" style="display: none;">
+            <h2>Capability Strand Reports</h2>
+
+            <!-- Strand Tabs -->
+            <div class="strand-tabs">
+                <div class="tab-navigation">
+                    <button class="tab-btn tab-btn-active" data-tab="overview">📊 Overview</button>
+                    <div id="strandTabsContainer" class="strand-tabs-dynamic"></div>
+                </div>
+
+                <!-- Overview Tab -->
+                <div id="tab-overview" class="tab-content tab-content-active">
+                    <div class="overview-grid">
+                        <div id="overviewContainer" class="overview-container"></div>
+                    </div>
+                </div>
+
+                <!-- Strand Tabs Content -->
+                <div id="strandsTabsContent" class="strands-tabs-content"></div>
+            </div>
+        </section>
+
+        <!-- Expiring Certifications Alert -->
+        <section id="expiringSection" class="expiring-section" style="display: none;">
+            <h2>⚠️ Certifications Expiring Soon (90 Days)</h2>
+            <div id="expiringContainer" class="expiring-container"></div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>D4H Training Report Generator | NZRT Capability Framework v3 | Report generated: <span id="timestamp"></span></p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
