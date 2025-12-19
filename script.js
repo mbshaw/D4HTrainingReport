@@ -146,13 +146,16 @@ class TrainingReportApp {
         let status = 'no';
         let expiryDate = null;
 
-        if (value === 'Yes') {
+        // Trim whitespace from CSV values
+        const trimmedValue = value ? value.trim() : '';
+
+        if (trimmedValue === 'Yes') {
           status = 'yes';
-        } else if (value === '-' || value === '?') {
+        } else if (trimmedValue === '-' || trimmedValue === '?') {
           status = 'no';
-        } else if (value && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(value)) {
+        } else if (trimmedValue && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(trimmedValue)) {
           status = 'yes';
-          expiryDate = this.parseDate(value);
+          expiryDate = this.parseDate(trimmedValue);
         }
 
         person.courses[courseCode] = {
