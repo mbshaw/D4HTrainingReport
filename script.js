@@ -16,6 +16,7 @@ class TrainingReportApp {
 
   init() {
     this.setupEventListeners();
+    this.setupModalHandlers();
     this.setTimestamp();
   }
 
@@ -149,13 +150,16 @@ class TrainingReportApp {
         // Trim whitespace from CSV values
         const trimmedValue = value ? value.trim() : '';
 
-        if (trimmedValue === 'Yes') {
+        if (trimmedValue.toLowerCase() === 'yes') {
           status = 'yes';
-        } else if (trimmedValue === '-' || trimmedValue === '?') {
+        } else if (trimmedValue === '-' || trimmedValue === '?' || trimmedValue === '') {
           status = 'no';
         } else if (trimmedValue && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(trimmedValue)) {
           status = 'yes';
           expiryDate = this.parseDate(trimmedValue);
+        } else if (trimmedValue) {
+          // If any other non-empty value, treat as 'yes' (could be a date format we haven't recognized)
+          status = 'yes';
         }
 
         person.courses[courseCode] = {
@@ -179,7 +183,10 @@ class TrainingReportApp {
       this.evaluateCapabilityStrands(person);
 
       return person;
-    }).filter(p => p.name.trim()); // Remove empty rows
+    }).filter(p => {
+      // Remove empty rows and retired personnel
+      return p.name.trim() && !p.status.toLowerCase().includes('retired');
+    });
 
     // Update filters
     this.updateFilterOptions();
@@ -507,13 +514,15 @@ class TrainingReportApp {
         const strandData = person.strands[strandName];
         const qualifiedStatus = strandData.qualified ? '✓ Yes' : '✗ No';
         const missingText = strandData.missingCourses.length > 0 ?
-          strandData.missingCourses.join(', ') : '—';
+          strandData.missingCourses.map(course =>
+            `<a href="#" class="course-link" onclick="app.showCourseModal(event, '${course}')">${course}</a>`
+          ).join(', ') : '—';
         const expiringText = strandData.expiringSoon ? '⚠️ Yes' : '—';
         const rowClass = strandData.qualified ? 'qualified-row' : 'not-qualified-row';
 
         tableHTML += `
           <tr class="${rowClass}">
-            <td class="person-name">${person.name}</td>
+            <td class="person-name"><a href="#" class="person-link" data-person-id="${strandPeople.indexOf(person)}" onclick="app.showPersonModal(event, '${person.name}')">${person.name}</a></td>
             <td>${person.status}</td>
             <td class="qualified-cell">${qualifiedStatus}</td>
             <td class="missing-courses">${missingText}</td>
@@ -576,6 +585,190 @@ class TrainingReportApp {
     // Add active class to clicked button and corresponding content
     document.querySelector(`[data-tab="${tabId}"]`)?.classList.add('tab-btn-active');
     document.getElementById(`tab-${tabId}`)?.classList.add('tab-content-active');
+  }
+
+  showPersonModal(event, personName) {
+    event.preventDefault();
+
+    const person = this.processedData.find(p => p.name === personName);
+    if (!person) return;
+
+    // Set person name in modal header
+    document.getElementById('modalPersonName').textContent = person.name;
+
+    // Set person status
+    const statusHTML = `
+      <div class="status-item">
+        <span class="status-label">Personnel Status</span>
+        <span class="status-value">${person.status}</span>
+      </div>
+    `;
+    document.getElementById('personStatus').innerHTML = statusHTML;
+
+    // Build strand qualifications list
+    let strandHTML = '';
+    Object.entries(CONFIG.CAPABILITY_STRANDS).forEach(([strandName, strandConfig]) => {
+      const strandData = person.strands[strandName];
+      if (!strandData) return;
+
+      const qualifiedClass = strandData.qualified ? 'qualified' : 'not-qualified';
+      const qualifiedText = strandData.qualified ? 'Qualified' : 'Not Qualified';
+      const missingText = strandData.missingCourses.length > 0
+        ? `<div class="strand-qual-missing"><strong>Missing:</strong> ${strandData.missingCourses.map(course =>
+            `<a href="#" class="course-link" onclick="app.showCourseModal(event, '${course}')">${course}</a>`
+          ).join(', ')}</div>`
+        : '';
+
+      strandHTML += `
+        <div class="strand-qualification-item ${qualifiedClass}">
+          <div class="strand-qual-header">
+            <span class="strand-qual-name">${strandName}</span>
+            <span class="strand-qual-status ${qualifiedClass}">${qualifiedText}</span>
+          </div>
+          ${missingText}
+        </div>
+      `;
+    });
+
+    document.getElementById('personStrandsList').innerHTML = strandHTML;
+
+    // Show modal
+    document.getElementById('personModal').style.display = 'flex';
+  }
+
+  closePersonModal() {
+    document.getElementById('personModal').style.display = 'none';
+  }
+
+  setupModalHandlers() {
+    // Close person modal when clicking outside of it
+    document.getElementById('personModal').addEventListener('click', (event) => {
+      if (event.target.id === 'personModal') {
+        this.closePersonModal();
+      }
+    });
+
+    // Close course modal when clicking outside of it
+    document.getElementById('courseModal').addEventListener('click', (event) => {
+      if (event.target.id === 'courseModal') {
+        this.closeCourseModal();
+      }
+    });
+
+    // Close modals on Escape key
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        this.closePersonModal();
+        this.closeCourseModal();
+      }
+    });
+  }
+
+  getStrandsRequiringCourse(courseCode) {
+    const strands = [];
+    Object.entries(CONFIG.CAPABILITY_STRANDS).forEach(([strandName, strandConfig]) => {
+      Object.entries(strandConfig.requirements).forEach(([roleType, requiredCodes]) => {
+        const courseMatches = requiredCodes.some(code => {
+          return code === courseCode ||
+                 code.toString() === courseCode.toString() ||
+                 (typeof code === 'number' && parseInt(courseCode) === code);
+        });
+        if (courseMatches && !strands.includes(strandName)) {
+          strands.push(strandName);
+        }
+      });
+    });
+    return strands;
+  }
+
+  getPersonnelWithCourse(courseCode) {
+    return this.processedData.filter(person => {
+      return Object.entries(person.courses).some(([courseKey, courseData]) => {
+        return this.courseMatches(courseCode, courseData);
+      });
+    });
+  }
+
+  getPersonnelMissingCourse(courseCode) {
+    return this.processedData.filter(person => {
+      const hasCourse = Object.entries(person.courses).some(([courseKey, courseData]) => {
+        return this.courseMatches(courseCode, courseData);
+      });
+      return !hasCourse;
+    });
+  }
+
+  showCourseModal(event, courseCode) {
+    event.preventDefault();
+
+    const personelWithCourse = this.getPersonnelWithCourse(courseCode);
+    const personelMissingCourse = this.getPersonnelMissingCourse(courseCode);
+    const standsRequiring = this.getStrandsRequiringCourse(courseCode);
+
+    // Set course name in modal header - try to get description from config
+    let courseName = courseCode;
+    if (CONFIG.COURSE_CODE_MAPPING[courseCode]) {
+      courseName = `${courseCode} - ${CONFIG.COURSE_CODE_MAPPING[courseCode]}`;
+    }
+    document.getElementById('modalCourseName').textContent = courseName;
+
+    // Update stats
+    const totalPersonnel = this.processedData.length;
+    document.getElementById('courseTotalPersonnel').textContent = totalPersonnel;
+    document.getElementById('courseCompleted').textContent = personelWithCourse.length;
+    document.getElementById('courseMissing').textContent = personelMissingCourse.length;
+
+    // Build strands list
+    let strandsHTML = '';
+    if (standsRequiring.length > 0) {
+      strandsHTML = standsRequiring.map(strand =>
+        `<div class="course-strand-item">${strand}</div>`
+      ).join('');
+    } else {
+      strandsHTML = '<div class="empty-state">This course is not required for any capability strands</div>';
+    }
+    document.getElementById('courseStrands').innerHTML = strandsHTML;
+
+    // Build personnel who have completed list
+    let completedHTML = '';
+    if (personelWithCourse.length > 0) {
+      completedHTML = personelWithCourse.map(person => {
+        const statusClass = person.status === 'Operational' ? 'operational' : 'non-operational';
+        return `
+          <div class="course-personnel-item">
+            <span class="course-personnel-name">${person.name}</span>
+            <span class="course-personnel-status ${statusClass}">${person.status}</span>
+          </div>
+        `;
+      }).join('');
+    } else {
+      completedHTML = '<div class="empty-state">No personnel have completed this course</div>';
+    }
+    document.getElementById('courseCompletedList').innerHTML = completedHTML;
+
+    // Build personnel missing list
+    let missingHTML = '';
+    if (personelMissingCourse.length > 0) {
+      missingHTML = personelMissingCourse.map(person => {
+        const statusClass = person.status === 'Operational' ? 'operational' : 'non-operational';
+        return `
+          <div class="course-personnel-item">
+            <span class="course-personnel-name">${person.name}</span>
+            <span class="course-personnel-status ${statusClass}">${person.status}</span>
+          </div>
+        `;
+      }).join('');
+    } else {
+      missingHTML = '<div class="empty-state">All personnel have completed this course</div>';
+    }
+    document.getElementById('courseMissingList').innerHTML = missingHTML;
+
+    // Show modal
+    document.getElementById('courseModal').style.display = 'flex';
+  }
+
+  closeCourseModal() {
+    document.getElementById('courseModal').style.display = 'none';
   }
 
   generateExpiringList() {
@@ -676,7 +869,66 @@ class TrainingReportApp {
       margin: 10,
       filename: 'D4H-Training-Report.pdf',
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
+      html2canvas: {
+        scale: 2,
+        onclone: (clonedDocument) => {
+          // Apply print styles to the cloned document (without @media print wrapper)
+          const style = clonedDocument.createElement('style');
+          style.textContent = `
+            body {
+              background-color: white;
+            }
+
+            .container {
+              max-width: 100%;
+            }
+
+            .upload-section,
+            .controls-section {
+              display: none !important;
+            }
+
+            .header {
+              page-break-after: avoid;
+            }
+
+            .charts-grid,
+            .strands-container {
+              page-break-inside: avoid;
+            }
+
+            .strand-section,
+            .chart-container {
+              page-break-inside: avoid;
+              break-inside: avoid;
+            }
+
+            table {
+              page-break-inside: avoid;
+            }
+
+            .strand-table tbody tr {
+              page-break-inside: avoid;
+              break-inside: avoid;
+            }
+
+            .tab-navigation {
+              display: none !important;
+            }
+
+            .tab-content {
+              display: block !important;
+              page-break-inside: avoid;
+              break-inside: avoid;
+            }
+
+            .tab-content-active {
+              display: block !important;
+            }
+          `;
+          clonedDocument.head.appendChild(style);
+        }
+      },
       jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
     };
 

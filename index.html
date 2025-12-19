@@ -146,7 +146,59 @@
             <h2>⚠️ Certifications Expiring Soon (90 Days)</h2>
             <div id="expiringContainer" class="expiring-container"></div>
         </section>
+    </div>
 
+    <!-- Person Detail Modal -->
+    <div id="personModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalPersonName"></h2>
+                <button type="button" class="modal-close" onclick="app.closePersonModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="personStatus" class="person-status"></div>
+                <h3>Capability Strand Qualifications</h3>
+                <div id="personStrandsList" class="person-strands-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Detail Modal -->
+    <div id="courseModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalCourseName"></h2>
+                <button type="button" class="modal-close" onclick="app.closeCourseModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="course-summary-stats">
+                    <div class="stat-box">
+                        <div class="stat-box-label">Total Personnel</div>
+                        <div class="stat-box-value" id="courseTotalPersonnel">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">Completed</div>
+                        <div class="stat-box-value completed" id="courseCompleted">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">Missing</div>
+                        <div class="stat-box-value missing" id="courseMissing">0</div>
+                    </div>
+                </div>
+
+                <h3>Required in Capability Strands</h3>
+                <div id="courseStrands" class="course-strands-list"></div>
+
+                <h3>Personnel Who Have Completed</h3>
+                <div id="courseCompletedList" class="course-personnel-list"></div>
+
+                <h3>Personnel Missing This Course</h3>
+                <div id="courseMissingList" class="course-personnel-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
         <!-- Footer -->
         <footer class="footer">
             <p>D4H Training Report Generator | NZRT Capability Framework v3 | Report generated: <span id="timestamp"></span></p>

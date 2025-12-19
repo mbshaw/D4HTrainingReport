@@ -477,6 +477,34 @@ body {
   color: var(--text-primary);
 }
 
+.person-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.person-link:hover {
+  color: #1e40af;
+  border-bottom-color: var(--primary-color);
+}
+
+.course-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.course-link:hover {
+  color: #1e40af;
+  border-bottom-color: var(--primary-color);
+}
+
 .qualified-cell {
   font-weight: 600;
 }
@@ -608,6 +636,263 @@ body {
   color: var(--danger-color);
 }
 
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(135deg, var(--primary-color), #1e40af);
+  color: white;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s ease;
+}
+
+.modal-close:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.person-status {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: var(--light-bg);
+  border-radius: 0.375rem;
+}
+
+.status-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.status-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.person-strands-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.strand-qualification-item {
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  padding: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.strand-qualification-item.qualified {
+  background-color: rgba(34, 197, 94, 0.05);
+  border-color: var(--success-color);
+}
+
+.strand-qualification-item.not-qualified {
+  background-color: rgba(239, 68, 68, 0.05);
+  border-color: var(--danger-color);
+}
+
+.strand-qual-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.strand-qual-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.strand-qual-status {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+}
+
+.strand-qual-status.qualified {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.strand-qual-status.not-qualified {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.strand-qual-missing {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+.strand-qual-missing strong {
+  color: var(--text-primary);
+}
+
+/* Course Modal Styles */
+.course-summary-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-box {
+  background: var(--light-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.stat-box-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.stat-box-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.stat-box-value.completed {
+  color: var(--success-color);
+}
+
+.stat-box-value.missing {
+  color: var(--danger-color);
+}
+
+.course-strands-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.course-strand-item {
+  background: var(--light-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.course-personnel-list {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.course-personnel-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  background: white;
+}
+
+.course-personnel-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.course-personnel-status {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  background-color: var(--light-bg);
+  color: var(--text-secondary);
+}
+
+.course-personnel-status.operational {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: var(--success-color);
+}
+
+.course-personnel-status.non-operational {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--danger-color);
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+  background: var(--light-bg);
+  border: 1px dashed var(--border-color);
+  border-radius: 0.375rem;
+  font-style: italic;
+}
+
 /* Footer */
 .footer {
   background-color: var(--secondary-color);
@@ -656,6 +941,21 @@ body {
   .strand-table tbody tr {
     page-break-inside: avoid;
     break-inside: avoid;
+  }
+
+  /* Show all tabs in print view */
+  .tab-navigation {
+    display: none;
+  }
+
+  .tab-content {
+    display: block !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .tab-content-active {
+    display: block !important;
   }
 }
 
