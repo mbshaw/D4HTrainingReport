@@ -12,6 +12,11 @@ class TrainingReportApp {
     };
     this.charts = {};
     this.deferredPrompt = null; // Store PWA install prompt
+    this.teamComposer = {
+      selectedPersonnel: new Set(),
+      selectedStrand: '',
+      compositionResult: null
+    };
     this.init();
   }
 
@@ -80,6 +85,12 @@ class TrainingReportApp {
         }
 
         this.rawData = results.data;
+
+        // Clear team composer state on new upload
+        this.teamComposer.selectedPersonnel.clear();
+        this.teamComposer.selectedStrand = '';
+        this.teamComposer.compositionResult = null;
+
         this.processData();
         this.showStatus('CSV loaded successfully!', 'success');
         this.displayReport();
@@ -347,6 +358,9 @@ class TrainingReportApp {
 
     // Generate expiring certifications list
     this.generateExpiringList();
+
+    // Initialize Team Composer
+    this.initializeTeamComposer();
   }
 
   updateSummaryMetrics() {
@@ -709,6 +723,516 @@ class TrainingReportApp {
       // Clear the deferred prompt
       this.deferredPrompt = null;
     });
+  }
+
+  initializeTeamComposer() {
+    // Populate strand dropdown
+    const strandSelect = document.getElementById('composerStrandSelect');
+    if (!strandSelect) return; // Team Composer not in DOM yet
+
+    strandSelect.innerHTML = '<option value="">Choose capability strand...</option>';
+    Object.keys(CONFIG.CAPABILITY_STRANDS).forEach(strand => {
+      const option = document.createElement('option');
+      option.value = strand;
+      option.textContent = strand;
+      strandSelect.appendChild(option);
+    });
+
+    // Render personnel list
+    this.renderPersonnelCheckboxes();
+
+    // Attach event listeners
+    strandSelect.addEventListener('change', (e) => this.handleStrandSelectionChange(e));
+
+    const selectAllBtn = document.getElementById('selectAllOperational');
+    if (selectAllBtn) {
+      selectAllBtn.addEventListener('click', () => this.selectAllOperational());
+    }
+
+    const clearBtn = document.getElementById('clearSelection');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => this.clearPersonnelSelection());
+    }
+
+    const calculateBtn = document.getElementById('calculateTeams');
+    if (calculateBtn) {
+      calculateBtn.addEventListener('click', () => this.calculateAndDisplayTeams());
+    }
+
+    // Attach checkbox event listeners
+    const checkboxList = document.getElementById('personnelCheckboxList');
+    if (checkboxList) {
+      checkboxList.addEventListener('change', (e) => {
+        if (e.target.classList.contains('personnel-checkbox')) {
+          this.handlePersonnelCheckboxChange(e);
+        }
+      });
+    }
+  }
+
+  renderPersonnelCheckboxes() {
+    const checkboxList = document.getElementById('personnelCheckboxList');
+    if (!checkboxList) return;
+
+    // Filter to only operational personnel and sort by name
+    const operationalPersonnel = this.processedData
+      .filter(p => p.status === 'Operational')
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    checkboxList.innerHTML = '';
+
+    if (operationalPersonnel.length === 0) {
+      checkboxList.innerHTML = '<p style="padding: 1rem; color: var(--text-secondary);">No operational personnel</p>';
+      return;
+    }
+
+    operationalPersonnel.forEach(person => {
+      const isSelected = this.teamComposer.selectedPersonnel.has(person.name);
+      const selectedStrand = this.teamComposer.selectedStrand;
+      const isQualified = selectedStrand && person.strands[selectedStrand]?.qualified;
+
+      const label = document.createElement('label');
+      label.innerHTML = `
+        <input
+          type="checkbox"
+          class="personnel-checkbox"
+          data-person-name="${person.name}"
+          ${isSelected ? 'checked' : ''}
+        >
+        <span class="checkbox-person-name">${person.name}</span>
+        ${isQualified ? '<span class="qualification-badge">✓ Qualified</span>' : ''}
+      `;
+      checkboxList.appendChild(label);
+    });
+  }
+
+  handleStrandSelectionChange(event) {
+    this.teamComposer.selectedStrand = event.target.value;
+    this.teamComposer.compositionResult = null;
+
+    // Re-render checkboxes to show/hide qualification badges
+    this.renderPersonnelCheckboxes();
+
+    // Hide previous results
+    const resultsDiv = document.getElementById('composerResults');
+    if (resultsDiv) {
+      resultsDiv.style.display = 'none';
+    }
+  }
+
+  handlePersonnelCheckboxChange(event) {
+    const personName = event.target.dataset.personName;
+
+    if (event.target.checked) {
+      this.teamComposer.selectedPersonnel.add(personName);
+    } else {
+      this.teamComposer.selectedPersonnel.delete(personName);
+    }
+  }
+
+  selectAllOperational() {
+    const operationalPersonnel = this.processedData
+      .filter(p => p.status === 'Operational')
+      .map(p => p.name);
+
+    operationalPersonnel.forEach(name => {
+      this.teamComposer.selectedPersonnel.add(name);
+    });
+
+    // Update checkboxes
+    this.renderPersonnelCheckboxes();
+  }
+
+  clearPersonnelSelection() {
+    this.teamComposer.selectedPersonnel.clear();
+    this.renderPersonnelCheckboxes();
+  }
+
+  calculateAndDisplayTeams() {
+    if (!this.teamComposer.selectedStrand) {
+      alert('Please select a capability strand');
+      return;
+    }
+
+    if (this.teamComposer.selectedPersonnel.size === 0) {
+      alert('Please select at least one personnel');
+      return;
+    }
+
+    this.calculateTeamComposition();
+    this.displayCompositionResults();
+  }
+
+  calculateTeamComposition() {
+    const strandName = this.teamComposer.selectedStrand;
+    const strandConfig = CONFIG.CAPABILITY_STRANDS[strandName];
+
+    if (!strandConfig) return;
+
+    const result = {
+      strandName,
+      minTeamSize: strandConfig.minTeamSize,
+      requiredRoles: strandConfig.requiredRoles || {},
+      advancedRequired: strandConfig.advancedRequired || 0,
+
+      qualifiedByRole: {
+        'Team Leader': [],
+        'Team Medic': [],
+        'Team Driver': [],
+        'General': []
+      },
+
+      selectedNonOperational: [],
+      operationalNotQualified: [],
+
+      shortfalls: {},
+      maxTeams: 0
+    };
+
+    // Categorize selected personnel
+    this.teamComposer.selectedPersonnel.forEach(personName => {
+      const person = this.processedData.find(p => p.name === personName);
+      if (!person) return;
+
+      // Non-operational
+      if (person.status !== 'Operational') {
+        result.selectedNonOperational.push({
+          name: person.name,
+          status: person.status
+        });
+        return;
+      }
+
+      // Not qualified for strand
+      if (!person.strands[strandName]?.qualified) {
+        result.operationalNotQualified.push({
+          name: person.name,
+          missingCourses: person.strands[strandName]?.missingCourses || []
+        });
+        return;
+      }
+
+      // Qualified - categorize by role
+      const hasTeamLeader = person.roles && person.roles.has('Team Leader');
+      const hasTeamMedic = person.roles && person.roles.has('Team Medic');
+      const hasDriver = person.roles && person.roles.has('Team Driver');
+
+      if (hasTeamLeader) {
+        result.qualifiedByRole['Team Leader'].push({
+          name: person.name,
+          operational: true
+        });
+      }
+
+      if (hasTeamMedic) {
+        result.qualifiedByRole['Team Medic'].push({
+          name: person.name,
+          operational: true
+        });
+      }
+
+      if (hasDriver) {
+        result.qualifiedByRole['Team Driver'].push({
+          name: person.name,
+          operational: true
+        });
+      }
+
+      // If no specific role, add to General
+      if (!hasTeamLeader && !hasTeamMedic && !hasDriver) {
+        result.qualifiedByRole['General'].push({
+          name: person.name,
+          operational: true
+        });
+      }
+    });
+
+    // Calculate max teams
+    const totalQualified = Object.values(result.qualifiedByRole)
+      .reduce((sum, arr) => sum + arr.length, 0);
+
+    let maxTeams = Math.floor(totalQualified / result.minTeamSize);
+
+    // Apply role constraints
+    Object.entries(result.requiredRoles).forEach(([role, required]) => {
+      const available = result.qualifiedByRole[role].length;
+      const maxTeamsByRole = Math.floor(available / required);
+      maxTeams = Math.min(maxTeams, maxTeamsByRole);
+    });
+
+    // Apply advanced specialist constraints
+    if (result.advancedRequired > 0) {
+      const advancedCount = this.countAdvancedSpecialists(strandName);
+      const maxTeamsByAdvanced = Math.floor(advancedCount / result.advancedRequired);
+      maxTeams = Math.min(maxTeams, maxTeamsByAdvanced);
+    }
+
+    result.maxTeams = Math.max(0, maxTeams);
+
+    // Calculate shortfalls (if can't form 1 team)
+    if (result.maxTeams < 1) {
+      Object.entries(result.requiredRoles).forEach(([role, required]) => {
+        const available = result.qualifiedByRole[role].length;
+        result.shortfalls[role] = Math.max(0, required - available);
+      });
+
+      // General shortfall
+      const generalNeeded = result.minTeamSize -
+        Object.keys(result.requiredRoles).length;
+      const generalAvailable = result.qualifiedByRole['General'].length +
+        Object.keys(result.requiredRoles).reduce((sum, role) => {
+          return sum + result.qualifiedByRole[role].length;
+        }, 0);
+      result.shortfalls['General'] = Math.max(0, generalNeeded - generalAvailable);
+    }
+
+    this.teamComposer.compositionResult = result;
+  }
+
+  countAdvancedSpecialists(strandName) {
+    // Count personnel with advanced qualifications for specific strands
+    let count = 0;
+    this.teamComposer.selectedPersonnel.forEach(personName => {
+      const person = this.processedData.find(p => p.name === personName);
+      if (!person || person.status !== 'Operational') return;
+
+      // For Swift Water Rescue and Rope Rescue, count advanced specialists
+      if (strandName === 'Swift Water Rescue') {
+        // Check for advanced swift water certifications
+        const hasAdvanced = Object.values(person.courses).some(course =>
+          course.numericCode === 17965 || course.numericCode === 17966
+        );
+        if (hasAdvanced) count++;
+      } else if (strandName === 'Rope Rescue') {
+        // Check for advanced rope rescue certifications (20538, 20539)
+        const hasAdvanced = Object.values(person.courses).some(course =>
+          course.numericCode === 20538 || course.numericCode === 20539
+        );
+        if (hasAdvanced) count++;
+      }
+    });
+    return count;
+  }
+
+  displayCompositionResults() {
+    const result = this.teamComposer.compositionResult;
+    if (!result) return;
+
+    const resultsDiv = document.getElementById('composerResults');
+    if (!resultsDiv) return;
+
+    // Build HTML for results
+    let html = `
+      <div class="results-header">
+        <h3>Team Composition for <strong>${result.strandName}</strong></h3>
+      </div>
+
+      <div class="composition-summary">
+        <div class="summary-card">
+          <div class="summary-card-label">Maximum Teams</div>
+          <div class="summary-card-value ${result.maxTeams > 0 ? 'success' : 'warning'}">
+            ${result.maxTeams}
+          </div>
+          <div class="summary-card-note">Complete teams of ${result.minTeamSize}</div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-card-label">Selected Personnel</div>
+          <div class="summary-card-value">${this.teamComposer.selectedPersonnel.size}</div>
+          <div class="summary-card-breakdown">
+            <span class="operational-count">${this.countOperationalSelected()}</span> /
+            <span class="nonop-count">${this.countNonOperationalSelected()}</span>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-card-label">Qualified Personnel</div>
+          <div class="summary-card-value qualified">
+            ${Object.values(result.qualifiedByRole).reduce((sum, arr) => sum + arr.length, 0)}
+          </div>
+        </div>
+      </div>
+
+      <div class="role-breakdown">
+        <h4>Personnel by Role</h4>
+    `;
+
+    // Required roles tables
+    Object.entries(result.requiredRoles).forEach(([role, required]) => {
+      const personnel = result.qualifiedByRole[role] || [];
+      const count = personnel.length;
+      const isSufficient = count >= required;
+
+      html += `
+        <div class="role-table-container">
+          <h5>${role}
+            <span class="role-count-badge ${isSufficient ? 'sufficient' : 'insufficient'}">
+              ${count}/${required}
+            </span>
+          </h5>
+          <table class="role-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      if (personnel.length === 0) {
+        html += '<tr><td style="color: var(--text-secondary); font-style: italic;">None selected</td></tr>';
+      } else {
+        personnel.forEach(p => {
+          html += `<tr><td>${p.name}</td></tr>`;
+        });
+      }
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+    });
+
+    // General members table
+    const general = result.qualifiedByRole['General'] || [];
+    html += `
+      <div class="role-table-container">
+        <h5>Qualified Team Members (General)
+          <span class="role-count-badge sufficient">${general.length}</span>
+        </h5>
+        <table class="role-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    if (general.length === 0) {
+      html += '<tr><td style="color: var(--text-secondary); font-style: italic;">None selected</td></tr>';
+    } else {
+      general.forEach(p => {
+        html += `<tr><td>${p.name}</td></tr>`;
+      });
+    }
+
+    html += `
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    // Operational but not qualified
+    if (result.operationalNotQualified.length > 0) {
+      html += `
+        <div class="role-table-container">
+          <h5>Operational but Not Qualified
+            <span class="role-count-badge insufficient">${result.operationalNotQualified.length}</span>
+          </h5>
+          <table class="role-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Missing Courses</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      result.operationalNotQualified.forEach(p => {
+        html += `
+          <tr>
+            <td>${p.name}</td>
+            <td>${p.missingCourses.join(', ')}</td>
+          </tr>
+        `;
+      });
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // Non-operational selected
+    if (result.selectedNonOperational.length > 0) {
+      html += `
+        <div class="role-table-container">
+          <h5>Selected But Non-Operational (Can't Deploy)
+            <span class="role-count-badge insufficient">${result.selectedNonOperational.length}</span>
+          </h5>
+          <table class="role-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      result.selectedNonOperational.forEach(p => {
+        html += `
+          <tr>
+            <td>${p.name}</td>
+            <td><span class="status-badge">${p.status}</span></td>
+          </tr>
+        `;
+      });
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // Shortfall warnings
+    if (result.maxTeams < 1 && Object.keys(result.shortfalls).length > 0) {
+      html += `
+        <div class="shortfall-warnings">
+          <h5>⚠ Cannot Form Complete Team - Missing:</h5>
+      `;
+
+      Object.entries(result.shortfalls).forEach(([role, shortfall]) => {
+        if (shortfall > 0) {
+          html += `
+            <div class="shortfall-item">
+              <span class="shortfall-role">${role}:</span>
+              <span class="shortfall-amount">Need ${shortfall} more</span>
+            </div>
+          `;
+        }
+      });
+
+      html += `</div>`;
+    }
+
+    html += `</div>`;
+
+    resultsDiv.innerHTML = html;
+    resultsDiv.style.display = 'block';
+  }
+
+  countOperationalSelected() {
+    let count = 0;
+    this.teamComposer.selectedPersonnel.forEach(name => {
+      const person = this.processedData.find(p => p.name === name);
+      if (person && person.status === 'Operational') count++;
+    });
+    return count;
+  }
+
+  countNonOperationalSelected() {
+    let count = 0;
+    this.teamComposer.selectedPersonnel.forEach(name => {
+      const person = this.processedData.find(p => p.name === name);
+      if (person && person.status !== 'Operational') count++;
+    });
+    return count;
   }
 
   getStrandsRequiringCourse(courseCode) {

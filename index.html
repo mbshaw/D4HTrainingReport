@@ -159,6 +159,7 @@
             <div class="strand-tabs">
                 <div class="tab-navigation">
                     <button class="tab-btn tab-btn-active" data-tab="overview">📊 Overview</button>
+                    <button class="tab-btn" data-tab="team-composer">👥 Team Composer</button>
                     <div id="strandTabsContainer" class="strand-tabs-dynamic"></div>
                 </div>
 
@@ -166,6 +167,39 @@
                 <div id="tab-overview" class="tab-content tab-content-active">
                     <div class="overview-grid">
                         <div id="overviewContainer" class="overview-container"></div>
+                    </div>
+                </div>
+
+                <!-- Team Composer Tab -->
+                <div id="tab-team-composer" class="tab-content">
+                    <!-- Strand Selection -->
+                    <div class="composer-controls">
+                        <h3>Step 1: Select Capability Strand</h3>
+                        <select id="composerStrandSelect" class="filter-select">
+                            <option value="">Choose capability strand...</option>
+                        </select>
+                    </div>
+
+                    <!-- Personnel Selection -->
+                    <div class="personnel-selection">
+                        <h3>Step 2: Select Available Personnel</h3>
+                        <div class="selection-actions">
+                            <button id="selectAllOperational" type="button" class="btn btn-secondary">Select All</button>
+                            <button id="clearSelection" type="button" class="btn btn-secondary">Clear Selection</button>
+                        </div>
+                        <div id="personnelCheckboxList" class="checkbox-list">
+                            <!-- Personnel checkboxes populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Calculate Button -->
+                    <div class="composer-button-container">
+                        <button id="calculateTeams" type="button" class="btn btn-primary">Calculate Team Composition</button>
+                    </div>
+
+                    <!-- Results Display -->
+                    <div id="composerResults" class="composer-results">
+                        <!-- Results populated by JS -->
                     </div>
                 </div>
 
