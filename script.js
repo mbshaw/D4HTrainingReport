@@ -11,12 +11,14 @@ class TrainingReportApp {
       search: ''
     };
     this.charts = {};
+    this.deferredPrompt = null; // Store PWA install prompt
     this.init();
   }
 
   init() {
     this.setupEventListeners();
     this.setupModalHandlers();
+    this.setupPWAInstall();
     this.setTimestamp();
   }
 
@@ -661,6 +663,51 @@ class TrainingReportApp {
         this.closePersonModal();
         this.closeCourseModal();
       }
+    });
+  }
+
+  setupPWAInstall() {
+    const installBtn = document.getElementById('installBtn');
+
+    // Listen for beforeinstallprompt event
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Store the event for later use
+      this.deferredPrompt = e;
+      // Show the install button
+      installBtn.style.display = 'inline-flex';
+      console.log('[PWA] Install prompt available');
+    });
+
+    // Handle install button click
+    installBtn.addEventListener('click', async () => {
+      if (!this.deferredPrompt) {
+        console.warn('[PWA] Install prompt not available');
+        return;
+      }
+
+      // Show the install prompt
+      this.deferredPrompt.prompt();
+
+      // Wait for the user's response
+      const { outcome } = await this.deferredPrompt.userChoice;
+      console.log(`[PWA] User response to install prompt: ${outcome}`);
+
+      // Clear the deferred prompt
+      this.deferredPrompt = null;
+
+      // Hide the install button
+      installBtn.style.display = 'none';
+    });
+
+    // Listen for app installed event
+    window.addEventListener('appinstalled', () => {
+      console.log('[PWA] App successfully installed');
+      // Hide the install button
+      installBtn.style.display = 'none';
+      // Clear the deferred prompt
+      this.deferredPrompt = null;
     });
   }
 

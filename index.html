@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D4H Training Report Generator</title>
     <link rel="stylesheet" href="style.css">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Theme color for browsers -->
+    <meta name="theme-color" content="#3b82f6">
+
+    <!-- Apple-specific meta tags for PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="D4H Reports">
+    <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
+
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512x512.png">
+
+    <!-- Microsoft application config -->
+    <meta name="msapplication-TileColor" content="#3b82f6">
+    <meta name="msapplication-TileImage" content="./icons/icon-192x192.png">
+
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <!-- html2pdf for PDF export -->
@@ -16,8 +37,20 @@
     <div class="container">
         <!-- Header -->
         <header class="header">
-            <h1>D4H Training Report Generator</h1>
-            <p>NZRT Capability Framework Assessment Tool</p>
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>D4H Training Report Generator</h1>
+                    <p>NZRT Capability Framework Assessment Tool</p>
+                </div>
+                <button id="installBtn" class="btn-install" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Install App
+                </button>
+            </div>
         </header>
 
         <!-- Upload Section -->
@@ -208,5 +241,20 @@
     <!-- Scripts -->
     <script src="config.js"></script>
     <script src="script.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => {
+                        console.log('[PWA] Service Worker registered:', reg.scope);
+                    })
+                    .catch(err => {
+                        console.error('[PWA] Service Worker registration failed:', err);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>

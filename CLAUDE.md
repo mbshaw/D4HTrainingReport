@@ -16,12 +16,44 @@ A vanilla JavaScript web application that allows users to upload CSV files conta
 - **Dependencies**: Chart.js, PapaParse, html2pdf (all loaded via CDN)
 - **No build process required** - pure vanilla JavaScript
 
+### PWA Architecture
+- **Service Worker**: Cache-first strategy with offline support
+- **Manifest**: Defines app metadata, icons, display behavior (`manifest.json`)
+- **Install Prompt**: Custom install button using `beforeinstallprompt` API
+- **Icon System**: SVG-based placeholder icons (192x192, 512x512 PNG)
+- **Cache Strategy**: Caches static assets and CDN dependencies for offline use
+- **Cache Versioning**: `d4h-reports-v1` with automatic cleanup of old caches
+
+#### Service Worker Implementation
+- **Install Event**: Caches all static assets and CDN dependencies
+- **Activate Event**: Cleans up old cache versions on service worker activation
+- **Fetch Event**: Implements cache-first strategy (serve from cache, fallback to network)
+- **Network Fallback**: Automatically fetches from network if cache miss and online
+- **Error Handling**: Gracefully handles fetch failures and missing resources
+
+#### Install Prompt Flow
+1. Browser fires `beforeinstallprompt` event when app is installable
+2. App prevents default behavior and stores event (`deferredPrompt`)
+3. Install button becomes visible in header
+4. User clicks install button
+5. App calls `deferredPrompt.prompt()` to show system install dialog
+6. User confirms installation
+7. App receives `appinstalled` event and hides install button
+8. Installed app launches in standalone window/fullscreen mode
+
 ### File Structure
 All code consolidated into minimal files:
 - `index.html` - Main HTML file with embedded or linked CSS/JS
 - `script.js` - All JavaScript logic (CSV parsing, data processing, chart generation, UI)
 - `style.css` - All styling
 - `config.js` - Configuration settings (file size limits, chart options, etc.)
+
+**PWA Files**:
+- `manifest.json` - Web app manifest with app metadata and icons
+- `service-worker.js` - Service worker for offline support and caching
+- `icons/icon.svg` - SVG source icon
+- `icons/icon-192x192.png` - App icon at 192x192 pixels
+- `icons/icon-512x512.png` - App icon at 512x512 pixels (splash screens)
 
 ## Feature Specifications
 
@@ -43,6 +75,7 @@ All code consolidated into minimal files:
    - Calculate completion percentages per course and per person
    - Determine if personnel meet minimum requirements for each capability strand
    - Identify expiring certifications (within 90 days) within each strand
+   - Filter out personnel with "Retired" status during import
    - Handle missing/invalid data gracefully
 
 3. **Report Visualization** (for business/management audience)
@@ -77,11 +110,27 @@ All code consolidated into minimal files:
    - Search for specific personnel or course names
    - Dynamic chart and table updates on filter changes
 
-5. **Export & Print**
-   - Print-friendly stylesheet (removes UI controls, optimizes for printing)
-   - PDF download via html2pdf
-   - Professional report formatting
-   - Include timestamp and data summary in exports
+5. **Interactive Modals**
+   - **Person Detail Modal**: Click on any personnel name to view detailed profile including:
+     - Operational status and role assignment
+     - Capability strands they qualify for
+     - Missing courses per strand (clickable)
+     - Full course completion breakdown
+   - **Course Detail Modal**: Click on any course name (in tables or person modal) to view course summary including:
+     - Total personnel count (completed vs. missing)
+     - Which capability strands require the course
+     - List of all personnel with completion status and operational status badges
+     - Empty state handling for courses with no data
+   - Both modals close via Escape key or backdrop click
+
+6. **Export & Print**
+   - Print-friendly stylesheet hides upload and control sections
+   - Displays all capability strand tabs in print view (not just active tab)
+   - PDF download via html2pdf with custom style injection
+   - Print CSS styles applied directly to cloned DOM (not wrapped in @media queries, since html2canvas doesn't evaluate them)
+   - Page break optimization to keep tables and sections together
+   - Professional report formatting suitable for management review
+   - PDF exports inherit all print CSS styling automatically
 
 ### Expected CSV Format
 Competency matrix format (as seen in nzrtsouth_courses_matrix-4.csv):
@@ -144,10 +193,14 @@ FirstName2 LastName2,Operational,#,-,Yes,08/02/2027,Yes,...
 - Include legend and labels for clarity
 
 ### PDF Generation
-- Use html2pdf library for client-side PDF generation
-- Capture visible report sections
-- Include company header/footer if needed
-- Maintain formatting from print stylesheet
+- Use html2pdf library for client-side PDF generation with html2canvas rendering
+- Inject print CSS styles directly into cloned DOM via `onclone` callback
+- Styles must NOT be wrapped in `@media print` since html2canvas doesn't evaluate media queries
+- Use `!important` flags on critical display properties to override inline styles
+- Hide upload/control sections and tab navigation in PDF export
+- Display all capability strand tabs as block elements in PDF
+- Configure page breaks to keep sections and tables together
+- Capture all report sections and maintain professional formatting
 
 ### Configuration
 Settings in `config.js`:
@@ -205,6 +258,33 @@ For each capability strand, personnel must hold ALL of the minimum course codes 
 2. Mark as "Qualified" if holds all required courses (with valid dates where applicable)
 3. Mark as "Not Qualified" if missing any required courses
 4. Flag if certifications are expiring within 90 days
+
+## Recent Implementation Updates
+
+### Course Detail Modal (Recent Feature)
+- Implemented clickable course names throughout the application
+- Course modal displays:
+  - Statistics: Total personnel, count completed, count missing
+  - List of all capability strands that require this course
+  - Personnel breakdown showing who has/hasn't completed the course
+  - Operational status badges for each person
+  - Empty states when no data exists
+- Course names are clickable in:
+  - Main capability strand tables (missing courses section)
+  - Person detail modal (missing courses per strand)
+- Uses same modal styling patterns as person modal for consistency
+
+### Retired Personnel Filtering
+- CSV import now automatically filters out any personnel with "Retired" status
+- Case-insensitive matching on status field
+- Applied during `processData()` to ensure retired personnel don't appear in any reports
+
+### Print & PDF Improvements
+- Print view now displays all capability strand tabs (not just active tab)
+- Upload and control sections hidden in print view
+- PDF export uses same styling as browser print functionality
+- Technical detail: Print CSS styles injected directly into html2canvas cloned DOM without @media query wrapper
+- Page break rules optimize PDF layout to keep tables/sections together
 
 ## Future Enhancement Possibilities (not in MVP)
 - Multiple chart style options
