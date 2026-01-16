@@ -728,7 +728,14 @@ class TrainingReportApp {
   initializeTeamComposer() {
     // Populate strand dropdown
     const strandSelect = document.getElementById('composerStrandSelect');
-    if (!strandSelect) return; // Team Composer not in DOM yet
+    console.log('Team Composer: strandSelect element found?', !!strandSelect);
+    console.log('Team Composer: CONFIG.CAPABILITY_STRANDS exists?', !!CONFIG.CAPABILITY_STRANDS);
+    console.log('Team Composer: CONFIG.CAPABILITY_STRANDS keys:', Object.keys(CONFIG.CAPABILITY_STRANDS || {}));
+
+    if (!strandSelect) {
+      console.warn('Team Composer: Element #composerStrandSelect not found in DOM');
+      return; // Team Composer not in DOM yet
+    }
 
     strandSelect.innerHTML = '<option value="">Choose capability strand...</option>';
     Object.keys(CONFIG.CAPABILITY_STRANDS).forEach(strand => {
@@ -737,6 +744,7 @@ class TrainingReportApp {
       option.textContent = strand;
       strandSelect.appendChild(option);
     });
+    console.log('Team Composer: Dropdown populated with', strandSelect.options.length, 'options');
 
     // Render personnel list
     this.renderPersonnelCheckboxes();
