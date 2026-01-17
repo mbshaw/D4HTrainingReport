@@ -955,16 +955,26 @@ class TrainingReportApp {
       }
     });
 
-    // Calculate max teams
-    const totalQualified = Object.values(result.qualifiedByRole)
-      .reduce((sum, arr) => sum + arr.length, 0);
+    // Calculate max teams - count UNIQUE qualified personnel only (some may have multiple roles)
+    const uniqueQualified = new Set();
+    this.teamComposer.selectedPersonnel.forEach(personName => {
+      const person = this.processedData.find(p => p.name === personName);
+      if (person && person.status === 'Operational' && person.strands[strandName]?.qualified) {
+        uniqueQualified.add(personName);
+      }
+    });
+
+    const totalQualified = uniqueQualified.size;
+    console.log('DEBUG: totalQualified (unique people) =', totalQualified, 'minTeamSize =', result.minTeamSize);
 
     let maxTeams = Math.floor(totalQualified / result.minTeamSize);
+    console.log('DEBUG: maxTeams (by size) =', maxTeams);
 
     // Apply role constraints
     Object.entries(result.requiredRoles).forEach(([role, required]) => {
       const available = result.qualifiedByRole[role].length;
       const maxTeamsByRole = Math.floor(available / required);
+      console.log(`DEBUG: ${role} constraint - available: ${available}, required per team: ${required}, maxTeams: ${maxTeamsByRole}`);
       maxTeams = Math.min(maxTeams, maxTeamsByRole);
     });
 
@@ -976,6 +986,7 @@ class TrainingReportApp {
     }
 
     result.maxTeams = Math.max(0, maxTeams);
+    console.log('DEBUG: FINAL maxTeams =', result.maxTeams, 'for strand:', strandName);
 
     // Calculate shortfalls (if can't form 1 team)
     if (result.maxTeams < 1) {
