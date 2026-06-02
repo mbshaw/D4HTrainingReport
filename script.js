@@ -530,9 +530,10 @@ class TrainingReportApp {
         const strandData = person.strands[strandName];
         const qualifiedStatus = strandData.qualified ? '✓ Yes' : '✗ No';
         const missingText = strandData.missingCourses.length > 0 ?
-          strandData.missingCourses.map(course =>
-            `<a href="#" class="course-link" onclick="app.showCourseModal(event, '${course}')">${course}</a>`
-          ).join(', ') : '—';
+          strandData.missingCourses.map(course => {
+            const courseDesc = CONFIG.COURSE_CODE_MAPPING[course] || course;
+            return `<a href="#" class="course-link" title="${courseDesc}" onclick="app.showCourseModal(event, '${course}')">${course}</a>`;
+          }).join(', ') : '—';
         const expiringText = strandData.expiringSoon ? '⚠️ Yes' : '—';
         const rowClass = strandData.qualified ? 'qualified-row' : 'not-qualified-row';
 
@@ -630,9 +631,10 @@ class TrainingReportApp {
       const qualifiedClass = strandData.qualified ? 'qualified' : 'not-qualified';
       const qualifiedText = strandData.qualified ? 'Qualified' : 'Not Qualified';
       const missingText = strandData.missingCourses.length > 0
-        ? `<div class="strand-qual-missing"><strong>Missing:</strong> ${strandData.missingCourses.map(course =>
-            `<a href="#" class="course-link" onclick="app.showCourseModal(event, '${course}')">${course}</a>`
-          ).join(', ')}</div>`
+        ? `<div class="strand-qual-missing"><strong>Missing:</strong> ${strandData.missingCourses.map(course => {
+            const courseDesc = CONFIG.COURSE_CODE_MAPPING[course] || course;
+            return `<a href="#" class="course-link" title="${courseDesc}" onclick="app.showCourseModal(event, '${course}')">${course}</a>`;
+          }).join(', ')}</div>`
         : '';
 
       strandHTML += `
@@ -1161,10 +1163,15 @@ class TrainingReportApp {
       `;
 
       result.operationalNotQualified.forEach(p => {
+        const missingWithTips = p.missingCourses.map(course => {
+          const courseDesc = CONFIG.COURSE_CODE_MAPPING[course] || course;
+          return `<span title="${courseDesc}" style="border-bottom: 1px dotted var(--text-secondary); cursor: help;">${course}</span>`;
+        }).join(', ');
+
         html += `
           <tr>
             <td>${p.name}</td>
-            <td>${p.missingCourses.join(', ')}</td>
+            <td>${missingWithTips}</td>
           </tr>
         `;
       });
@@ -1296,11 +1303,17 @@ class TrainingReportApp {
     const standsRequiring = this.getStrandsRequiringCourse(courseCode);
 
     // Set course name in modal header - try to get description from config
+    const courseDesc = CONFIG.COURSE_CODE_MAPPING[courseCode] || '';
     let courseName = courseCode;
     if (CONFIG.COURSE_CODE_MAPPING[courseCode]) {
       courseName = `${courseCode} - ${CONFIG.COURSE_CODE_MAPPING[courseCode]}`;
+    if (courseDesc) {
+      courseName = `${courseCode} - ${courseDesc}`;
     }
     document.getElementById('modalCourseName').textContent = courseName;
+    const modalHeader = document.getElementById('modalCourseName');
+    modalHeader.textContent = courseName;
+    modalHeader.title = courseDesc;
 
     // Update stats
     const totalPersonnel = this.processedData.length;
@@ -1326,6 +1339,7 @@ class TrainingReportApp {
         const statusClass = person.status === 'Operational' ? 'operational' : 'non-operational';
         return `
           <div class="course-personnel-item">
+          <div class="course-personnel-item" title="${courseDesc}">
             <span class="course-personnel-name">${person.name}</span>
             <span class="course-personnel-status ${statusClass}">${person.status}</span>
           </div>
@@ -1343,6 +1357,7 @@ class TrainingReportApp {
         const statusClass = person.status === 'Operational' ? 'operational' : 'non-operational';
         return `
           <div class="course-personnel-item">
+          <div class="course-personnel-item" title="${courseDesc}">
             <span class="course-personnel-name">${person.name}</span>
             <span class="course-personnel-status ${statusClass}">${person.status}</span>
           </div>
