@@ -1,294 +1,499 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D4H Training Report Generator</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b2733">
+<meta name="application-name" content="NZRT Planner">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="NZRT Planner">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%20role%3D%22img%22%20aria-labelledby%3D%22title%20desc%22%3E%0A%20%20%3Ctitle%20id%3D%22title%22%3ENZ%20Response%20Team%20Capability%20Planner%20icon%3C%2Ftitle%3E%0A%20%20%3Cdesc%20id%3D%22desc%22%3EDark%20response-team%20shield%20with%20orange%20rescue%20stripe%20and%20RT%20lettering.%3C%2Fdesc%3E%0A%20%20%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22104%22%20fill%3D%22%230b2733%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M82%20332%20L430%20245%20L430%20306%20L82%20393%20Z%22%20fill%3D%22%23e76024%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M94%2094%20H418%20V202%20L94%20283%20Z%22%20fill%3D%22%23123746%22%2F%3E%0A%20%20%3Ctext%20x%3D%22256%22%20y%3D%22278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2C%20Helvetica%2C%20sans-serif%22%20font-size%3D%22178%22%20font-weight%3D%22900%22%20letter-spacing%3D%22-12%22%20fill%3D%22%23ffffff%22%3ERT%3C%2Ftext%3E%0A%20%20%3Cpath%20d%3D%22M94%2094%20H418%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2218%22%20stroke-linecap%3D%22round%22%20opacity%3D%220.95%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22392%22%20cy%3D%22120%22%20r%3D%2214%22%20fill%3D%22%23e76024%22%2F%3E%0A%3C%2Fsvg%3E%0A">
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAHWUlEQVR4nO3cbWwURRzH8d3rtaW9thSLxFqxxPAoJNSApqASRBMSiYAKAqXQEisEykMJBgJE3kBj4UUDRMRAE2MlKWqEBCmiQHlO1QDy2JYHMaIBMRT6/HRX1heHzXjtf++4dmdnZn+f9M1d524n4cvc7vTudM+QURpAV1x2TwDEhTiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiAhDiA5Lb6AA1VZ6w+hGPFDR1t6fNj5QAS4gAS4gAS4gAS4gCS5VcrSekTrT6Ekq4Mu8neHF75HP85YOUQUUAZXd7DAeIQDtUB/z4Qh1jMC+DcB+IAEuIAEuIAEuIAEuIQi/l+BufdDsQhHKoA/vtgiENEnTuwZYfU8u1zCI8tNQTAygEkxAEkxAEkxAEkxAEkxAEk0S9lN32Y+/60yY/1EMMwvL721ra2mvqG6gc1t+7cvf7Hnxeu3ij/9dL92rqgD/9mc/6EdGs/D9LZ/dq6QROncz5oUKLHEQZd16Mi3VGR7nhPbP+n+qUNG+y//+FD45dLV0pKD339/eE2r8/eSUrBQS8rLpeePnLEljXLz377xaTxL9s9HQk4KI4OT/frW1ywLi9rpt0TEZ0T4/D7aOG85dmz7J6F0Jwbh6Zpq3IyBw941u5ZiMvRcUS63fl5C+yehbgcHYemaeNfGpWU2NvuWQhK+kvZTUW7NhZ92XHTHRER74lNTUlOHzk8a+qbQV81XC79jbEvfnXgcMc90/PWhnjonOmTN67INRnw3dFT2avXh/hsAlJt5fC1tz+oqz9fee2z3XvHZS4sKf0x6ENe+G8jBAKoFgfL6/OtKNh6+5975sP69knkMh35qByHpmmtXu++spPmY55EHATF49A0reK33+2egqzUj6O+scl8QG19A5+ZSEf9OBLiPOYDbv51m89MpKN+HCMGBXkb97mKq3xmIh3F44iOipoyYZzJgMbm5iPl+KbUrqkcR6TbvWXt8n5JfUzG7D5wuLG5mduU5CL9DmkAd0REXGxMakrymLQR2W9PGpTa32RwdU1twY5ibnPrEa011dyOJX0cK3MyV+ZkhvHAVq933poNobxx0HY8g2BJH0d4HtTVz19XcPrcRbsnQrIrCJYT4zh4snx14fZbd+7aPZFAIgTBclAcTc0t+8pOfr639MzlSrvn8ohoNQRwUBwul+6JjTEMw95pCB4ES+VL2QC9oqPfeu2VH4o2r1823+XSeR66taa644fncbvJQXH46bq+aNa7O9ev4dDHQ2+bdEGwHBeH39TXx61dkG33LEQn/TlHx9sEdV33xPQakJL86ui0nGmTB6Qkmz9w6ZwZZT+fFflq1nbqrByGYTQ0NV++fnN7yZ6xMz8I+gZBl0svXLUsKjKc/x7+FwtfU2NYM5WGOnGwWr3eJRsK9x87bT5sYOozOdOmhPqccp5UdoeacWiaZhjG0vzCv+8F+YfMy5oRFxtD/daBQbCUjUPTtNr6hnVbd5qPSUrsPf+9qR032RqcGQRL5Tg0Tdtz6NiFquvmY3Iz3onytUhdw40xtVY8reJxGIaxqWiX+ZjEhIRFc+T7xP2NMbUdPxYdQvE4NE07eOqnoIvHknmz44O91VQEHIJgKR6H/8Uif8t282GJCQm5cwX9OgbOQbCk3wTrrPOpw4GjJ85XVKU9P9TkUYuzM7YVl9Q3CLF1wb+DLimycgS9xPj4kx3mz2D74mHjCkGRPg5fS1MoVxmlZSfOV1SZj1mSPTshPq6H5hUSAYNgSR9H6Aq2Bdnz6J0Qz2HxEDwIloPi2H/k+IVgn19anJVhxeIhURAsEeNgTyDaW1t68JkLPg2+eCzOyuipw018witdECxR4uCzab3/yPGLldfMx+TOncX5zENYumfIKEsPEJ2YRP1K3u1qliALw8Dynv9mM977HAhCIjziQBCSsjwOqctwYBAsBbfPu8nhQbAQxyNoojNHx4EgzDkuDgQROkfEgSDCo2wcCKL7lIoDQfQs6eNAENaRMg4E4WfF31NY0sSBIPysDoIldBwIwo9nECzh4kAQfnYFwRIiDgShiVFDANviQBCakEGwuMaBIDThg2BZHgeC0KQKgmVJHAhCkzYIlhAnpMpQIAgW4uguxYJgIY5wKBwEC3GEyiFBsBCHGQcGwUIc/+PwGgIgDgRBcmgcCCIUDooDQTwuxeNAEN2hYBwIoqcoEgeCsILEcSAIq0kWB4LgSYI4EIRdRIwDNQhClDgQhIDsjANBCI53HAhCIjziQBCSsioOBKEAy7/BGOQlynefg4AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5AQB5D+BVWjZX5xwAnBAAAAAElFTkSuQmCC">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22NZ%20Response%20Team%20Capability%20Planner%22%2C%22short_name%22%3A%22NZRT%20Planner%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23eef2f3%22%2C%22theme_color%22%3A%22%230b2733%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAAH80lEQVR4nO3de2yTVRjH8bcbo4yOrRtDUBAIwyFySRBEkHAJGyqig3lFGCxCIhDuBjEhRghyB2WgAY2gkghMMCLIcJMAmoFDJbIIAgJhY2NcBQeMla67%2BMfIPOzyvl2fvue857y%2FT%2FYHW057npBvTtu3KzhcXXprAIEKET0AyA0BAQkCAhIEBCQICEgQEJAgICBBQECCgIAEAQEJAgISBAQkCAhIEBCQICAgQUBAgoCABAEBCQICEgQEJAgISBAQkCAgIEFAQIKAgAQBAQkCAhIEBCQICEgQEJAgICBpwmebklNH%2BGwENSIe7cNhF5xAQIKAgAQBAQkCAhIEBCScXoW17PcMn42AM04BQRD91fUc%2B223k51ETaLhIUw6teqp9yc8ISCZNNSKwIYQkDT0KxHVEAICEgQEJAgISBAQkCAgaehf7xF1NQgByaShSgReS0RAkqnbitgr0XgrQz5ii6kFJxCQICAgQUBAgoCABAEBCQICEmlexvfp3jVrQ1oAN6yorPT5fHc8d%2F%2B9efvKjRsFFy%2Bfzi%2FMPXXm92MnPHe9%2FtzDVysWDB%2FUP4Ctg2J71v7J85eL2t2QNAEFLDQkJNTpbOZ0tnRHde7QbkCvntU%2F9%2Fp82Udy0zP2fn%2FgYHlFhdgh5WXfhzBnWFhi%2Fyc2LJr367aNzw8ZIHocWdk3oBod2z64adl7a%2BbNDmui%2FnkcdAjonpSkZ9cvmOtwOEQPIhkE9L%2FkxMGTXhslegrJIKD7zJuUGhMVKXoKmSCg%2B7jCw1OTR4ieQiZKPW1Mz9g79f1VNd86HA5XeLPYaHf3RzolDR04MmFQk9BQwztJThy8%2BsutZo6pFKUCqqWqqqqk1FNS6skvurT7p0OfpO%2FYlrY4OrKF%2Fq0ei%2BvobhFRfLuk5icpcxf4v%2Bnk0cmLZ03WXzNnxdovvs3w%2Fz6tzEYPYX%2Bc%2BHvmktWGyxwOR3zH9hzmUYONAtI0bc%2FPv%2BQVXTJc1rZ1Kw7DqMFeAVVVVeUcPWa4zNU8nMMwarBXQJqmXbh81XAN3hrzn%2B0CuuPxGK4pvlViuAaq2S6giObNDddcvHqNwyRqsF1AHR5qo7%2FA6%2FOdOpfPZRYV2CugkBDHU7166K85nHu8zFfOZx4F2CugUQmD27V5QH%2FNlt1ZfIZRg8pXomt5sme3D96Zob%2FmdH7Bzn3ZfOYxg7f4OucdFQ%2FIFR7eKsbdIz5uZMKgpKEDQ0P0TtyKyso5yz%2FylUv2%2BMU%2FGpZSAY0eMWz0iGEB33zO8rWHjv4ZxHnMIzYallIBBcxz1ztr6epvsg6IHkSPdaJhISBt3%2BEj76Z9ejq%2FQPQg9bBmNCz7BuQtK9t14OCmHRk5ucdFz3If60fDsm9AmsMRExXpz4VpDuSKhmXfgJxhYQn9%2BiT06%2FPjod%2BmLlx54%2BYtzgPIGw3LXhcS6%2FX0gL6Zn61uHRvDbcfy0jtq1KMhoGpx7dt9%2FeGi8GZO0YPIR6mHMPaX6p1Nm8ZGR%2FWI75ycOPjFYUNCQgw%2BMdgjPm7pW1NmLUkzfUq1KHsCecvKiq5cy8zOmTR%2F2bCJMy7%2FY%2FyQMS5p%2BJC%2Bjwe%2BY%2FF1b%2FH1ck9pwPcgI2UDYuWePD1y6lz2gxYNWfn2tEZ9Qr46muovwoASs0VAmqadPX9h9tI0w2WdHm47ftRz%2BmsQDcsuAWmatmt%2FdmZ2juGyuRPH1n02jWgaYqOANE1b8PHGispK%2FTWx0e6JL71Q%2FWdEY8heAZ05X7j9h32Gy6aPfbmJt1SZbs72v2nendsrIE3TVn2%2B2fBTO7Ex0W%2BOfYXPPCY52%2F9mzZepG9kuoLyiS9szjQ%2BhWRPHu6zxNpn%2FuEXDsldA1U9olqxZZ3gItYx2T055lc9UFEKiYakfUN0XUHkFF9J37TG84cwJ4yJcVjyEhEfDUjMgw1fdy9dtMDyEYtxRU1JGmzBdICwVDUupgCp8Xj9fdecVFm3dafwv9MyYkCLqEGKLsVo0LKUCapQV6zcaHkLRUZFTx7%2FOZx7NwseMDvsGlFdYtOU740No%2BhtjW0S4zBtDxmhYcgTkLb7uux38v98V642fCbkjI6eljgnuvgs7eaSOhmXdgDi8%2FZR%2F4eLmHbsNl01LHRPZIsKkGWTncHXpzWEbp7ulP8uUefegmnUOmM45USbds%2FjfSEQ0UhMTEKJRBr%2BAEI2SOAWkRj2Ipi7xz4EsDtHoQ0C1oZhGQUCahmgI7BsQogkKewWEaIJO%2FYAQjanUDAjRcKNOQIhGCLkDQjQ6zHsDlSVfQIhGB59oWHIEhGh08I%2BGZdGAUIw%2BsdGwLBQQotFnnWhYggNCNDqsWUwtAgJCNDqkiIbFKSBEo0O6aFgmBoRodEgdDctCT6KVp0w0LARkLiWjYSGg4FM%2BGhYCCg5bRcNCQIGzbTQsBNQ4iKYWBGQAxehDQPVANP5DQPcgmsDYOiBEQ2e7gBBNcNkiIERjHmUDQjR8KBUQouFP%2BoAQjVhSBoRorEOagBCNNVk3IBQjBWsFhGikIz4gRCM1MQEhGmXwCwjRKMncgBCN8jj9ZyugKuv%2Bd08gBQQEJAgISBAQkCAgIEFAQIKAgAQBAQkCAhIEBCQICEgQEJAgICBBQECCgIAEAQEJAgISBAQkCAhIEBCQICAgQUBAgoCABAEBCQICEgQEJAgISBAQkCAgIEFAQIKAgAQBAQkCAhIEBCQICEgQEJAgICBBQECCgIAEAQEJAgISBAQkCAhI%2FgPin4%2BH4Cvt0gAAAABJRU5ErkJggg%3D%3D%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAIAAAB7GkOtAAAVbElEQVR4nO3deZjWZb3HcQZhAEFAcQfU2DeVxAU0jpaaa6SnY5cny3LNRKsrzSO2aGUlmi3HrYXMSuuUmh4tNUFxB0VMVFwIlbBCU0RwY2aAOX%2FY5SEEfJh57t%2F2fb2u%2Fjlpv%2Fv%2Bw%2FN5z89h5mnoPnRMBwDi6Zj3BQDIhwAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEEJAEBQAgAQlAAABCUAAEF1yvsCRfTakw%2FmfQWgznoM2zXvKxSONwCAoAQAICgBAAhKAACCEgCAoAQAICgBAAhKAACCEgCAoAQAICgBAAhKAACCEgCAoAQAICgBAAhKAACC8oEwa9Fn7AF5XwEgOW8AAEEJAEBQ%2FhUQUBRzhz%2Bz1v9%2B5BMDMr5JEAIA5G9d07%2F6X5WBuhMAIE%2Frn%2F53%2Fp0yUEe%2BBwDkpvb1b8%2F%2FhHURACAfbZ5yDagXAQBy0M4R14C6EAAga3WZbw1oPwEAMlXH4daAdhIAgKAEAMhO3b9m9xLQHgIAEJQAABlJ9NW6l4A2EwCAoAQAICgBAAhKAACCEgCAoAQAICgBAAhKAICMJPosFx8R02YCABCUAADZqftX6778bw8BAAhKAIBM1fFrdl%2F%2Bt5MAAFmry3Bb%2F%2FYTACAH7Zxv618XAgDko80jbv3rRQCA3LRhyq1%2FHXXK%2BwJAaG8Nei0f6mL6604AgPytPwOmPxEBAIrC0GfM9wAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKB8JGR1nH%2F6xOP%2BY0Let%2FgXK1aubGlZ0dzS0rJyZUtLS1Nzy7LXXl%2By7NUly15dsvTVV5Yte37xy88teuEvf39%2B4aIX3nhzeb63HT5wh3uu%2BlG%2Bd6iYW%2B994D9P%2B0ret2CdBICEOm20UaeNNurWtUstf%2FPiV5bOW%2FDcY39%2B%2BpGn5j867%2Bmnnv1Lc8uK1DeEyASAoujTu9e40b3GjR711v%2FZ1NLywJy5dzzw0PQHHnp03vxVq1rzvR5UjwBQUF06dx6%2F6%2Bjxu47%2BysnHvrx02e%2FvuPe3N0%2BbOWdua6sSQH0IACWwWa%2BeR3%2F4oKM%2FfNDCRS%2F89uZpU6658cWXl%2BR9KSg9fwqIMtlum61OP%2FaoOdf%2FYvJpE%2FttvWXe14FyEwDKp0tj4%2FFHTHjwmp998%2FMnde%2FWLe%2FrQFkJAGXVuVOnk448fMb%2F%2FOTA8ePyvguUkgBQbn232uKqC875%2Flmfb%2BzsG1qwYQSAKvjEhIOuu3jy5r175X0RKBMBoCLG7jxq6s8u6rvVFnlfBEpDAKiO7bbZ6nf%2FfZ73AKiRAFApg7bvd%2FUPvuWPBkEtBICq2WnooG9%2F4TN53wJKQACooKM%2BdMAh%2B%2ByV9y2g6ASAavremZ%2FbtOcmed8CCk0AqKY%2BvXt99hMfzfsWUGgCQGWdcMSHt9p8s7xvAcUlAFRWt65dPuclANZNAKiyjx60n18RAesiAFTZpj03%2BeBee%2BR9CygoAaDijjx4%2F7yvAAXl7Zha9Rl7QC1%2FW0NDQ2Pnzo2dO23ac5NNe%2FXst%2FWWA%2FptO3LwgF1HDntPv21TX%2FKd9tl9l86dOrWs8PnysCYBoM5aW1ubmpubmptfff2NhYtemPPkn9%2F%2BSzv03ebQffb65GEHD%2BjfN7P7dOvaZfTwwbMefSKzE6EsBIDsLPjboouvuuaSX117%2BH57n3PK8Zn95s49R%2B9YSwCeeHpBjW85dXfaMR8769OfTPf84Ycc%2BY%2FFPkWZNfkeAFlrbW393dQ7xn%2F8pFvunpHNibvvPDKbg6BcBIB8LH31taP%2F6%2BvX33ZXBmcN6t8vg1OgdASA3KxctWri178zd%2F6zqQ%2Fqv%2B1WDQ0NqU%2BB0hEA8rS8qekL5%2F2gtbU16SldOnfeZos%2BSY%2BAMhIAcvbgY09MvW9W6lP6b71V6iOgdASA%2FF1%2B7Y2pj%2Bixsc8IgzUJAPm7c9ZDr7%2F5ZtIjNu7WNenzoYwEgPw1t6y4f87cpEcIALyTAFAIjzw1P%2BnzN%2B7aJenzoYwEgEJ45q9%2FT%2Fr8lStXJX0%2BlJEAUAiLXlyc9PnLm5uTPh%2FKSAAohGWvvZ70%2BcubBADWJAAUwvKmpqTPf2nJK0mfD2UkABRCx45p%2F1F8%2FqWXkz4fykgAKISujY3pHt7a2vr8S2m%2FxwBlJAAUwma9eqZ7%2BF9fePGNN5enez6UlABQCFun%2FGVtTzy9IN3DobwEgEIYvH3%2FdA9f%2FWMpgbcJAIWw87DB6R5%2Bz0Nz0j0cyksAyF%2F3bt3GjByW6OFNzc0%2BER7WSgDI34HjxzZ27pTo4VPvm9Xkx4BhbQSA%2FB37kUPTPfy6qXekeziUmgCQs33H7jp251GJHr74laW33HN%2FoodD2QkAeerZo%2Fv5Xzwl3fOvuO4PqX%2FJBJSXAJCbLp07Tzn3rB36bpPo%2BW8ub5pyzQ2JHg4VkOo7b7B%2Bm2%2Fae8o3Jo3fdXS6Iy6%2B6pp%2FLF6S7vkUX9MrfgXI%2BggAWduoY8cjD9n%2FK585ZovNNk13yt%2F%2F8dJFV16d7vkUltGvnQCQnYHb9ZvwgfGfPOzg%2Fltvmfqsz37zu6k%2FaJ7iMPptIwDUWUNDQ2OnTo2NnXtv0mOz3r36bb3lwP59Rw0esOuo4dtvu3U2d5hy9Q3T75%2BdzVnkxei3nwBQq8Uz%2F5j3FWpy70OPfPkHP8r7FiRh9OtLAKiUeQsWfmrSN1pWrMj7ItSN0U9HAKiOeQsWTjj5jJeXLsv7IrSX0c%2BGAFARs%2Bc%2B%2BbHTz%2FbZv%2BVl9LMnAFTBtbdOP%2FXc7%2Fqlb6Vj9PMlAJTb62%2B%2Bedb3fnjlDbfkfRFqZfSLQwAosdtnPnjGBRc%2F%2B7dFeV%2BEd2H0i0kAKKVnnvvb2RdPuenO%2B%2FK%2BCOtk9ItPACiZpxf%2B9cIrfn3NLbevXLUq77uwJqNfLgJAOaxa1TptxqzLr71x2oxZra2teV%2BHf7L4pSYAFN2fHp%2F3u6l3XDftzkUvvpT3XejQwehXiABQdBt16th94659evcUgBwZ%2FUoSAIpupyGDdhoy6MwTjn74iXkXXvHrm%2B%2Ba4V8BZcPoV55PBKM0Rg8f8svJZ9995Q%2BTfoxMcE2vLH77P3nfheQEgJIZPnCH6y46b%2FJpE7t17ZL3XSrC6IclAJRPQ0PD8UdMuOuXlw3crl%2Fedykro08HAaC8BvTve%2FOPvztm5LC8L1IaRp81CAAl1qd3r%2F%2B95Pz999w974sUXfPSJUafdxIAyq1b1y4%2FP%2B8re%2B2yU94XgfIRAEqvS2PjVRd8bcgO2%2BV9ESgZAaAKNum%2B8a8u%2FHrvTXrkfREoEwGgIt7Td5tLvnp63reAMvGTwNSqz9gD1vWXujQ29uzRvWeP7r036TFswPY7Dhm445CBY0YO69wp03%2FADhw%2F7sSPHvbj316f5aFQXgJAHTQ1N7%2F4cvOLLy%2Fp0KHD7LlPvvVf9und6%2FD99z7yoP3fO2JIZjc555Tjpt8%2F%2B89%2FeS6zE6G8%2FCsgUln8ytIpV9%2Bw37GnHvXFczL70K4ujY2Xnv3Fjh0bsjkOSk0ASO6Wu2fsdeQJ3%2F%2FFb7I5bpcRQ4%2F7yIRszmq%2Ft34sa%2BXyN%2FK%2BCBEJAFloamn5xqWXn%2FjV81asXJnBcV%2F%2BzDFbbb5ZBge1jZ%2FIpSAEgOxce%2Bv0Y846N4OPcuyxcbdzJh6f%2BpQNYvQpIAEgUzfded8ZF1ycwUFHHPiB3XYcnsFB62H0KTgBIGtXXPeHn19%2FU%2BpTGhoavnbqCalPeSejT4kIADmYdOGljz%2F9bOpT9thp5MF775n6lA5Gn9ISAHLQ1NJy0tmTm1tWpD7oS5%2F%2BVKI%2FEmr0qQABIB9z5z978VVXpz5l2IDt%2F33%2Ffer1NKNPxQgAufnO5b%2FK4AfEzjju4xt1bPs%2F50afChMActPU3HzORT9JfcrA7fp95IPv36D%2FidEnCAEgT7%2B%2F494ZDz%2BW%2BpTTjvnYu34nwOgTkACQs3Mv%2B1nqIwZt3%2B%2Bd3wlYffGNPjEJADmbOeex22Y%2BmPqU0489qmPHBosPqxMA8jf5J79MfcTg7fsfOm5M6lMor%2FnjluZ9hRwIAPmbPffJ6ffPTn3KmScf37EdfxyI6pk%2Fbunb%2F8n7Lvnw%2Fw8UwvlTrkx9xNCB7zn8wP1Sn0LBGf3VCQCF8MCjj98560%2BpTznz5OMbGnxWTDhGf10EgKLI4CVg%2BKABhx2wb%2BpTKAKjXwsBoChmznnsntlzUp8yaeIJXgKqyuhvKAGgQM7%2FafKXgBGDB07Yf8N%2BMJgiM%2FrtIQAUyO23T7931kOpT%2FESUHZGv14EgJyt8cNZ37ok%2BW8HGjV08If28xJQMkY%2FhU55X4CI1vODuHfOnDVj9sPjxoxOeoFJE4%2B%2Fcdr01tbWpKfQTrY%2BNW8AZKT2X8Pw7fQvATsOG3LovnunPoU28JV%2BlrwBkFDbfuXO7ffdf%2F%2FDj%2Bwxeqe632d1Z558wo3T7kh6BDWy9XnxBkCd1eUXrp13yZQ6Xmmtdh4x9JAP%2FFvqU1gXX%2BkXgTcA6qDuv1xz6t33zZrz2G47j6rvY9cw6ZQT%2F3D7XUmPYHW2vmi8AdBGqX%2B18uTLkr8EjB4x7OD3ewlIy1f6ReYNgA2Q5a%2FRv%2BWOex567PFdRo1IesqZE4%2B%2FabqXgDqz9WXhDYBaZf8hKhl8J2CXUSMO3Od9qU%2BJwFf6ZSQAFNdN0%2B%2Ba8%2FhTqU%2BZNPHE1EdUldEvOwGg0M67NPnPBIzZccQH%2F23P1KdUhtGvEt8DoNB%2Bf9udjz45b8dhQ5KeMmniibfedV%2FSI0rN1leVNwAKrbW19bxLk38nYLedR%2B33vnGpTykXX%2BlH4A2Aorth6vS58%2BaPHDIo6SmTTjlh2j0zkh5RfLY%2BGm8AFF1ra%2Bvky36a%2BpQ9Ru%2B0715jU59SQL7Sj8wbACVw%2FR9ve3L%2BM8MGDUh6ylmnnHjbvTOTHlEQtp63eAMovbd%2FHHdl0%2FK875LKqlWrsngJeO9O799z99Sn5MVX%2BryTAJTP6r%2BDIfsfzsrLtTdPnffMgtSnnFXRnwmYseureV%2BBIhKAcgi4%2BGvI5iVg3JjRe4%2FdLfUpUBACUFxGfw3X3PTH%2BQsWpj7lrIknpD4CCkIAisXor8fKlavO%2F2Hyl4C9dttl%2FO5jUp8CRSAA%2BTP6tfvNjTc%2Fs%2FC51Kd86dRPpz4CiqCh%2B1Bf7KypS%2B8%2BqY%2Bw9dTIH9rJzKAZvfK%2BQtb8HEB2jD41MvpkQwDSMvrUyOiTPQGoP6NPjYw%2B%2BRKA%2BjD61MjoUxwC0HZGnxoZfYpJADaM0adGRp%2FiE4B3Z%2FSpkdGnXARg7Yw%2BNTL6lJcArIX1Z%2F2MPtUgAFATo0%2F1CACsk9Gn2gQA%2FoXRJw4BAKNPUAJARBYfOggAcRh9WIMAUGVGH9ZDAKgaow81EgCqwOhDGwgAZWX0oZ0EgDIx%2BlBHAkDRGX1IRAAoIqMPGRAAisLoQ8YEgDwZfciRAJA1ow8FIQBkwehDAQkAqRh9KDgBoJ6MPpSIANBeRh9KSgBoC6MPFSAA1MroQ8UIAOtj9KHCBIA1GX3iGDSjV95XyJMA0KGD0SeS4KO%2FOgGIy%2BgTh9FfKwGIxegTh9F%2FVwJQfUafOIz%2BBhGAajL6xGH020wAqsPoE4fRrwsBKDejTxxGv%2B4EoHyMPnEY%2FaQEoByMPnEY%2FcwIQHEZfeIw%2BrkQgGIx%2BsRh9HMnAPkz%2BsRh9AtFAPJh9InD6BeWAGTH6BOH0S8FAUjL6BOH0S8dAag%2Fo08cRr%2FUBKA%2BjD5xGP3KEIC2M%2FrEYfQrSQA2jNEnDqNfeQLw7ow%2BcRj9UARg7Yw%2BcRj9sATg%2Fxl94jD6dBAAo08cRp81RAyA0ScOo896RAwAVJvRp0YCAFVg9GkDAYCyMvq0kwBAmRh96kgAoOiMPokIABSR0ScDAgBFYfTJmABAnow%2BORIAyJrRpyAEALJg9CkgAYBUjD4FJwBQT0afEhEAaC%2BjT0kJALSF0acCBABqZfSpGAGA9TH6VJgAwJqMPkEIAHToYPQJSQAIyuKDABCI0YfVCQAVZ%2FRhXQSACjL6UAsBoCKMPmwoAaDEjD60hwBQMkYf6kUAKAGjDykIAAVl9CE1AaBAjD5kSQDImdGHvAgAOTD6UAQCQEaMPhSNAJCQ0YciEwDqzOhDWQgAdWD0oYwEgDYy%2BlB2AsAGMPpQJQLAuzD6UFUCwFoYfYhAAPgnow%2FRCEBoRh8iE4BwjD7wFgEIwegD7yQAlWX0gfUTgEox%2BkDtBKD0jD7QNgJQSkYfaD8BKA2jD9SXABSa0QfSEYDCMfpANgSgEIw%2BkD0ByI3RB%2FIlAJky%2BkBxCEByRh8oJgFIwugDxScAdWP0gXIRgHYx%2BkB5CcAGM%2FpANQhATYw%2BUD0CsE5GH6g2AfgXRh%2BIQwCMPhBU0AAYfYCG7kPH5H0HAHLQMe8LAJAPAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKAEACAoAQAISgAAghIAgKD%2BD9J0VoWESv6fAAAAAElFTkSuQmCC%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+<title>NZ Response Team Capability Planner</title>
+<style>
+:root{
+  --bg:#f3f6f8; --panel:#fff; --ink:#15232e; --muted:#667684; --line:#d9e1e6;
+  --brand:#006b9f; --brand2:#0b4f71; --ok:#18794e; --warn:#9a6700; --bad:#b42318; --na:#7a8791;
+  --okbg:#e8f5ee; --warnbg:#fff4d6; --badbg:#fdecea; --nabh:#eef1f3; --shadow:0 2px 12px rgba(15,35,50,.08);
+}
+*{box-sizing:border-box} html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+button,input,select{font:inherit} button{touch-action:manipulation}.app{min-height:100vh;display:flex;flex-direction:column}
+header{background:linear-gradient(120deg,var(--brand2),var(--brand));color:#fff;padding:max(14px,env(safe-area-inset-top)) 18px 14px;box-shadow:var(--shadow);position:sticky;top:0;z-index:20}
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:1400px;margin:auto}.title{font-weight:750;font-size:20px}.subtitle{opacity:.8;font-size:12px;margin-top:2px}.fileStatus{font-size:12px;opacity:.9;text-align:right}
+nav{background:#fff;border-bottom:1px solid var(--line);display:flex;overflow:auto;position:sticky;top:67px;z-index:19;padding-left:max(8px,env(safe-area-inset-left));scrollbar-width:none}nav::-webkit-scrollbar{display:none}
+.tab{border:0;background:transparent;padding:14px 15px;font-weight:650;color:var(--muted);white-space:nowrap;border-bottom:3px solid transparent}.tab.active{color:var(--brand);border-bottom-color:var(--brand)}
+main{width:100%;max-width:1400px;margin:0 auto;padding:16px max(14px,env(safe-area-inset-right)) 50px max(14px,env(safe-area-inset-left));flex:1}.view{display:none}.view.active{display:block}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 13px;font-weight:650;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.03)}.btn.primary{background:var(--brand);border-color:var(--brand);color:white}.btn.danger{color:var(--bad)}.btn:active{transform:translateY(1px)}
+.filebtn{position:relative;overflow:hidden}.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}.grid{display:grid;gap:14px}.grid.kpi{grid-template-columns:repeat(4,minmax(0,1fr))}.kpiCard .label{font-size:12px;color:var(--muted);font-weight:650}.kpiCard .value{font-size:30px;font-weight:800;margin-top:4px}.kpiCard .note{font-size:12px;color:var(--muted);margin-top:4px}
+h2{font-size:20px;margin:5px 0 12px}h3{font-size:16px;margin:0 0 10px}.small{font-size:12px;color:var(--muted)}.sectionTitle{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:18px 0 10px}
+.strandGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.strandCard{cursor:pointer;min-height:130px}.strandTop{display:flex;justify-content:space-between;gap:10px}.strandName{font-weight:800}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:750}.badge.ok{background:var(--okbg);color:var(--ok)}.badge.warn{background:var(--warnbg);color:var(--warn)}.badge.bad{background:var(--badbg);color:var(--bad)}.badge.na{background:var(--nabh);color:var(--na)}
+.progress{height:8px;border-radius:99px;background:#e9eef1;overflow:hidden;margin:13px 0 6px}.progress>span{display:block;height:100%;background:var(--brand);border-radius:99px}.metricRow{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.tableWrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px}.table{width:100%;border-collapse:collapse;min-width:760px}.table th,.table td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}.table th{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);background:#f8fafb;position:sticky;top:0}.table tr:last-child td{border-bottom:0}.clickrow{cursor:pointer}.clickrow:hover{background:#f8fbfd}
+.statusDot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px}.dot-ok{background:var(--ok)}.dot-warn{background:var(--warn)}.dot-bad{background:var(--bad)}.dot-na{background:var(--na)}
+.split{display:grid;grid-template-columns:minmax(280px,35%) 1fr;gap:14px}.listPanel{max-height:calc(100vh - 210px);overflow:auto}.memberItem{padding:11px;border-bottom:1px solid var(--line);cursor:pointer}.memberItem:last-child{border-bottom:0}.memberItem.active{background:#eaf5fb}.memberName{font-weight:750}.search{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}.select{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;min-width:180px}
+.req{border:1px solid var(--line);border-radius:11px;padding:11px;margin:8px 0}.reqHead{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.reqTitle{font-weight:700}.reqMeta{font-size:11px;color:var(--muted);margin-top:3px}.evidence{font-size:12px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);color:#4c5d69}.evidence code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
+.deployLayout{display:grid;grid-template-columns:minmax(260px,31%) 1fr;gap:14px}.checklist{max-height:50vh;overflow:auto;border:1px solid var(--line);border-radius:10px}.checkline{display:flex;gap:10px;align-items:center;padding:10px;border-bottom:1px solid var(--line)}.checkline:last-child{border-bottom:0}.checkline input{width:20px;height:20px}.checkline label{flex:1}.coverage{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.covCard{border:1px solid var(--line);border-radius:12px;padding:12px}.covCard.ok{border-color:#9bcbb4;background:#f4fbf7}.covCard.bad{border-color:#efb0aa;background:#fff8f7}.covCard.warn{border-color:#e7cf8a;background:#fffdf5}.covNum{font-size:24px;font-weight:800}.assignmentGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.assignment{border:1px solid var(--line);border-radius:11px;padding:11px}.assignment select{width:100%;margin-top:7px}
+.templateBar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.templateBar .select{min-width:260px}.summaryStrip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:10px}.summaryBox{border:1px solid var(--line);border-radius:11px;padding:10px;background:#fff}.summaryBox .n{font-size:23px;font-weight:800}.summaryBox .t{font-size:11px;color:var(--muted)}
+.gapList{margin-top:8px}.gapItem{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-top:1px dashed var(--line);font-size:12px}.gapItem:first-child{border-top:0}.slotGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}.slot{border:1px dashed var(--line);border-radius:9px;padding:8px}.slot label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.slot select{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fff}.candidateChips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.candidateChip{font-size:11px;padding:4px 7px;border-radius:999px;background:#eef5f9;color:var(--brand2)}.deploymentNote{font-size:12px;color:var(--muted);margin-top:8px}
 
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+.collapseSection{border:1px solid var(--line);border-radius:12px;margin-top:14px;background:#fff;overflow:hidden}.collapseSection>summary{list-style:none;cursor:pointer;padding:13px 14px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f8fafb;user-select:none}.collapseSection>summary::-webkit-details-marker{display:none}.collapseSection>summary:after{content:"▸";font-size:14px;color:var(--muted);transition:transform .15s ease}.collapseSection[open]>summary:after{transform:rotate(90deg)}.collapseBody{padding:12px}.collapseBody>.tableWrap{margin:0}.gapSummary{border:1px solid var(--line);background:#f8fafb;border-radius:10px;padding:10px 12px;margin-bottom:10px}.missingList{display:flex;flex-wrap:wrap;gap:5px}.missingChip{display:inline-flex;align-items:center;border-radius:999px;padding:4px 7px;font-size:11px;background:var(--badbg);color:var(--bad)}
+.notice{border:1px solid #b8d8e8;background:#f0f8fc;border-radius:11px;padding:12px;font-size:13px}.warning{border-color:#ebcf86;background:#fff9e7}.error{border-color:#efb0aa;background:#fff2f1}.hidden{display:none!important}.empty{text-align:center;padding:40px 16px;color:var(--muted)}
+.modalBack{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:18px;z-index:40}.modalBack.show{display:flex}.modal{background:#fff;width:min(760px,100%);max-height:90vh;overflow:auto;border-radius:16px;padding:18px;box-shadow:0 15px 50px rgba(0,0,0,.25)}.modalHead{display:flex;justify-content:space-between;align-items:center;gap:10px}.modalClose{border:0;background:#eef2f4;border-radius:50%;width:36px;height:36px;font-size:20px}.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
 
-    <!-- Theme color for browsers -->
-    <meta name="theme-color" content="#3b82f6">
+.deployMeta{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}.deployMeta input,.deployMeta textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:#fff}.deployMeta textarea{min-height:70px;resize:vertical}.field label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px}.crewBoard{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.teamCard{border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.teamHead{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.teamNameInput{font-weight:800;font-size:16px;border:0;border-bottom:1px dashed var(--line);padding:3px 2px;max-width:170px}.teamMembers{margin-top:9px;display:grid;gap:6px}.teamMember{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 8px;background:#f8fafb;border-radius:8px;font-size:12px}.teamMember select{max-width:130px;padding:5px;border:1px solid var(--line);border-radius:7px;background:#fff}.teamCaps{margin-top:10px;display:flex;flex-wrap:wrap;gap:5px}.teamCap{font-size:10px;padding:4px 6px;border-radius:999px;background:var(--nabh);color:var(--muted)}.teamCap.ok{background:var(--okbg);color:var(--ok)}.teamCap.warn{background:var(--warnbg);color:var(--warn)}.teamCap.bad{background:var(--badbg);color:var(--bad)}.equipGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.equipItem{display:flex;align-items:flex-start;gap:8px;border:1px solid var(--line);border-radius:10px;padding:9px}.equipItem input{width:20px;height:20px;flex:0 0 auto}.equipItem .grow{flex:1}.equipItem textarea{width:100%;min-height:38px;margin-top:5px;border:1px solid var(--line);border-radius:7px;padding:6px;font-size:11px;resize:vertical}.deployActions{display:flex;gap:8px;flex-wrap:wrap}.riskBanner{border-radius:11px;padding:10px 12px;font-weight:700}.riskBanner.ok{background:var(--okbg);color:var(--ok)}.riskBanner.warn{background:var(--warnbg);color:var(--warn)}.riskBanner.bad{background:var(--badbg);color:var(--bad)}.memberTeamSelect{margin-top:4px;width:100%;padding:5px;border:1px solid var(--line);border-radius:7px;background:#fff;font-size:11px}
+@media(max-width:900px){.deployMeta{grid-template-columns:1fr 1fr}.deployMeta .wide{grid-column:1/-1}.crewBoard{grid-template-columns:1fr}.equipGrid{grid-template-columns:1fr}.grid.kpi{grid-template-columns:repeat(2,1fr)}.strandGrid{grid-template-columns:repeat(2,1fr)}.split,.deployLayout{grid-template-columns:1fr}.listPanel{max-height:300px}.coverage,.assignmentGrid,.slotGrid{grid-template-columns:1fr}.summaryStrip{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.strandGrid{grid-template-columns:1fr}.grid.kpi{grid-template-columns:1fr 1fr}.title{font-size:17px}.subtitle{display:none}.fileStatus{display:none}main{padding-top:12px}.card{padding:13px}}
+@media print{header,nav,.toolbar,.noPrint{display:none!important}main{max-width:none;padding:0}.view{display:none!important}.view.active{display:block!important}.card{box-shadow:none}.tableWrap{overflow:visible}.table{min-width:0}}
 
-    <!-- Apple-specific meta tags for PWA -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="D4H Reports">
-    <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
+/* NZ Response Team visual refresh - v3.10 */
+:root{
+  --bg:#eef2f3;
+  --panel:#ffffff;
+  --ink:#102833;
+  --muted:#60747d;
+  --line:#cfd9dd;
+  --brand:#e76024;
+  --brand2:#123746;
+  --brandDark:#0b2733;
+  --accent:#0a7883;
+  --ok:#177447;
+  --warn:#8a5a00;
+  --bad:#b5281e;
+  --na:#68777e;
+  --okbg:#e6f4ec;
+  --warnbg:#fff1cc;
+  --badbg:#fce8e6;
+  --nabh:#e9eef0;
+  --shadow:0 3px 14px rgba(14,42,53,.09);
+}
+html,body{background:linear-gradient(180deg,#e8edef 0,#f4f6f7 260px,#eef2f3 100%)}
+header{
+  background:var(--brandDark);
+  color:#fff;
+  padding:max(12px,env(safe-area-inset-top)) 18px 12px;
+  border-top:6px solid var(--brand);
+  box-shadow:0 3px 12px rgba(5,27,37,.22);
+}
+.headrow{min-height:54px}.brandLockup{display:flex;align-items:center;gap:12px}.rtMark{width:48px;height:48px;display:grid;place-items:center;flex:0 0 48px;border:2px solid #fff;border-radius:10px;position:relative;background:rgba(255,255,255,.06);overflow:hidden}.rtMark:after{content:"";position:absolute;left:-9px;right:-9px;bottom:8px;height:7px;background:var(--brand);transform:rotate(-11deg)}.rtMark span{position:relative;z-index:1;font-weight:900;font-size:14px;letter-spacing:.06em}.title{font-size:20px;font-weight:850;letter-spacing:.01em}.subtitle{color:#c9d7dc;opacity:1}.fileStatus{padding:7px 10px;border:1px solid rgba(255,255,255,.22);border-radius:8px;background:rgba(255,255,255,.07);font-weight:700}
+nav{top:78px;background:#fff;border-bottom:1px solid #c9d4d8;box-shadow:0 2px 6px rgba(18,55,70,.05);padding-left:max(10px,env(safe-area-inset-left))}.tab{min-height:48px;padding:14px 17px;color:#536a74;font-weight:750;border-bottom-width:4px}.tab.active{color:var(--brandDark);border-bottom-color:var(--brand);background:#fff8f4}.tab:focus-visible,.btn:focus-visible,.search:focus-visible,.select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid rgba(10,120,131,.22);outline-offset:1px}
+main{max-width:1500px;padding-top:18px}.card{border-radius:10px;border-color:#ccd7db;box-shadow:var(--shadow)}
+h2{font-size:21px;color:var(--brandDark);letter-spacing:-.01em}h3{color:var(--brandDark)}.sectionTitle{border-bottom:2px solid #dce4e7;padding-bottom:8px}.sectionTitle h2,.sectionTitle h3{margin-bottom:0}
+.btn{min-height:44px;border-radius:7px;border-color:#becbd0;background:#fff;font-weight:750}.btn:hover{border-color:#8fa2aa}.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}.btn.primary:hover{background:#cf511b}.btn.danger{background:#fff5f4}.search,.select,.deployMeta input,.deployMeta textarea{min-height:44px;border-radius:7px;border-color:#bdcbd1}.select{background-color:#fff}
+.grid.kpi{gap:12px}.kpiCard{position:relative;overflow:hidden;border-top:4px solid var(--accent)}.kpiCard .label{text-transform:uppercase;letter-spacing:.055em;font-size:10px}.kpiCard .value{color:var(--brandDark);font-size:32px}
+.strandGrid{gap:13px}.strandCard{position:relative;min-height:138px;border-top:4px solid var(--brand);transition:transform .12s ease,box-shadow .12s ease}.strandCard:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(14,42,53,.12)}.strandName{font-size:16px;color:var(--brandDark)}.progress{height:9px;background:#e3e9eb}.progress>span{background:var(--accent)}
+.badge{border-radius:6px;padding:5px 8px;letter-spacing:.015em}.badge.ok{border:1px solid #a9d2ba}.badge.warn{border:1px solid #e4c779}.badge.bad{border:1px solid #e7aaa5}.badge.na{border:1px solid #cbd4d8}
+.tableWrap{border-radius:8px;border-color:#cbd6da}.table th{background:var(--brandDark);color:#edf5f7;font-weight:800;letter-spacing:.055em}.table td{background:#fff}.table tr:nth-child(even) td{background:#fafcfc}.clickrow:hover td{background:#fff5f0!important}
+.memberItem{min-height:52px}.memberItem.active{background:#fff1e9;border-left:4px solid var(--brand)}.memberName{color:var(--brandDark)}
+.req{border-radius:8px;border-left:4px solid #a8bac1}.reqTitle{color:var(--brandDark)}
+.collapseSection{border-radius:9px;border-color:#c9d5da}.collapseSection>summary{min-height:48px;background:#f3f6f7;color:var(--brandDark);padding:13px 14px}.collapseSection[open]>summary{border-bottom:1px solid #d6e0e3;background:#edf3f4}.collapseSection>summary:after{color:var(--brand)}
+.notice{border-radius:8px;border-left:5px solid var(--accent);background:#eef8f9}.warning{border-left-color:#d39517}.error{border-left-color:var(--bad)}
+.templateBar{border-left:5px solid var(--brand);padding-left:12px}.riskBanner{border-radius:8px;border-left:6px solid currentColor;padding:12px 14px}.summaryBox{border-radius:8px;border-top:4px solid var(--accent)}.summaryBox .n{color:var(--brandDark)}
+.covCard{border-radius:8px;border-left-width:5px}.covCard.ok{border-left-color:var(--ok)}.covCard.warn{border-left-color:#c38b17}.covCard.bad{border-left-color:var(--bad)}
+.teamCard{border-radius:9px;border-top:4px solid var(--brand)}.teamNameInput{color:var(--brandDark)}.teamMember{background:#f0f4f5;border-left:3px solid #9db0b7}.teamCap,.candidateChip{border-radius:5px}.candidateChip{background:#e4f1f3;color:#075e66;font-weight:700}
+.assignment,.equipItem,.slot{border-radius:8px}.checkline{min-height:48px}.checkline input,.equipItem input{accent-color:var(--brand)}
+.modal{border-radius:11px;border-top:6px solid var(--brand)}.modalClose{background:#edf2f4;color:var(--brandDark)}
+.field label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#596d76}.deploymentNote{border-left:3px solid #d6e0e3;padding-left:9px}
+.rtContext{display:inline-flex;align-items:center;gap:6px;margin-top:4px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#f5b18f}.rtContext:before{content:"";width:18px;height:3px;background:var(--brand);display:inline-block}
+@media(max-width:900px){nav{top:78px}.headrow{align-items:center}.strandCard:hover{transform:none}}
+@media(max-width:560px){header{padding-left:12px;padding-right:12px}.rtMark{width:42px;height:42px;flex-basis:42px}.title{font-size:16px}.brandLockup{gap:9px}nav{top:72px}.tab{padding:13px 14px}.grid.kpi{grid-template-columns:1fr 1fr}.kpiCard .value{font-size:27px}.card{border-radius:8px}}
+@media print{header{border-top:0}.table th{background:#e9eef0!important;color:#1a313a!important}.strandCard,.teamCard,.kpiCard{border-top-color:#777!important}}
 
-    <!-- Favicon and Icons -->
-    <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512x512.png">
-
-    <!-- Microsoft application config -->
-    <meta name="msapplication-TileColor" content="#3b82f6">
-    <meta name="msapplication-TileImage" content="./icons/icon-192x192.png">
-
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-    <!-- html2pdf for PDF export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- PapaParse for CSV parsing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="header-text">
-                    <h1>D4H Training Report Generator</h1>
-                    <p>NZRT Capability Framework Assessment Tool</p>
-                </div>
-                <button id="installBtn" class="btn-install" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    Install App
-                </button>
-            </div>
-        </header>
-
-        <!-- Upload Section -->
-        <section class="upload-section">
-            <div class="upload-box">
-                <h2>Upload Training Data</h2>
-                <div class="file-input-wrapper">
-                    <input
-                        type="file"
-                        id="csvFile"
-                        accept=".csv"
-                        class="file-input"
-                    >
-                    <label for="csvFile" class="file-label">
-                        <span class="upload-icon">📁</span>
-                        <span class="upload-text">Click to select CSV file or drag and drop</span>
-                    </label>
-                </div>
-                <div id="uploadStatus" class="upload-status"></div>
-            </div>
-        </section>
-
-        <!-- Controls Section -->
-        <section id="controlsSection" class="controls-section" style="display: none;">
-            <div class="controls">
-                <div class="control-group">
-                    <label for="strandFilter">Filter by Capability Strand:</label>
-                    <select id="strandFilter" class="filter-select">
-                        <option value="">All Strands</option>
-                    </select>
-                </div>
-                <div class="control-group">
-                    <label for="statusFilter">Filter by Personnel Status:</label>
-                    <select id="statusFilter" class="filter-select">
-                        <option value="">All Status</option>
-                        <option value="Operational">Operational</option>
-                        <option value="Non-operational">Non-operational</option>
-                    </select>
-                </div>
-                <div class="control-group">
-                    <label for="qualifiedFilter">Filter by Qualification:</label>
-                    <select id="qualifiedFilter" class="filter-select">
-                        <option value="">All</option>
-                        <option value="qualified">Qualified</option>
-                        <option value="notQualified">Not Qualified</option>
-                    </select>
-                </div>
-                <div class="control-group">
-                    <input
-                        type="text"
-                        id="searchInput"
-                        placeholder="Search by name or course code..."
-                        class="search-input"
-                    >
-                </div>
-                <div class="control-group">
-                    <button id="exportPdfBtn" class="btn btn-primary">📥 Export PDF</button>
-                    <button id="printBtn" class="btn btn-secondary">🖨️ Print</button>
-                    <button id="resetBtn" class="btn btn-secondary">Reset Filters</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Summary Metrics -->
-        <section id="summarySection" class="summary-section" style="display: none;">
-            <div class="summary-cards">
-                <div class="summary-card">
-                    <div class="metric-label">Total Personnel</div>
-                    <div class="metric-value" id="totalPersonnel">0</div>
-                </div>
-                <div class="summary-card">
-                    <div class="metric-label">Operational</div>
-                    <div class="metric-value metric-operational" id="operationalCount">0</div>
-                </div>
-                <div class="summary-card">
-                    <div class="metric-label">Strands Available</div>
-                    <div class="metric-value" id="strandsCount">0</div>
-                </div>
-                <div class="summary-card">
-                    <div class="metric-label">Expiring (90 days)</div>
-                    <div class="metric-value metric-warning" id="expiringCount">0</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Charts Section -->
-        <section id="chartsSection" class="charts-section" style="display: none;">
-            <h2>Overview</h2>
-            <div class="charts-grid">
-                <div class="chart-container">
-                    <h3>Personnel by Status</h3>
-                    <canvas id="statusChart"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3>Readiness by Capability Strand</h3>
-                    <canvas id="readinessChart"></canvas>
-                </div>
-            </div>
-        </section>
-
-        <!-- Capability Strands Reports Section -->
-        <section id="strandsReportSection" class="strands-report-section" style="display: none;">
-            <h2>Capability Strand Reports</h2>
-
-            <!-- Strand Tabs -->
-            <div class="strand-tabs">
-                <div class="tab-navigation">
-                    <button class="tab-btn tab-btn-active" data-tab="overview">📊 Overview</button>
-                    <button class="tab-btn" data-tab="team-composer">👥 Team Composer</button>
-                    <div id="strandTabsContainer" class="strand-tabs-dynamic"></div>
-                </div>
-
-                <!-- Overview Tab -->
-                <div id="tab-overview" class="tab-content tab-content-active">
-                    <div class="overview-grid">
-                        <div id="overviewContainer" class="overview-container"></div>
-                    </div>
-                </div>
-
-                <!-- Team Composer Tab -->
-                <div id="tab-team-composer" class="tab-content">
-                    <!-- Strand Selection -->
-                    <div class="composer-controls">
-                        <h3>Step 1: Select Capability Strand</h3>
-                        <select id="composerStrandSelect" class="filter-select">
-                            <option value="">Choose capability strand...</option>
-                        </select>
-                    </div>
-
-                    <!-- Personnel Selection -->
-                    <div class="personnel-selection">
-                        <h3>Step 2: Select Available Personnel</h3>
-                        <div class="selection-actions">
-                            <button id="selectAllOperational" type="button" class="btn btn-secondary">Select All</button>
-                            <button id="clearSelection" type="button" class="btn btn-secondary">Clear Selection</button>
-                        </div>
-                        <div id="personnelCheckboxList" class="checkbox-list">
-                            <!-- Personnel checkboxes populated by JS -->
-                        </div>
-                    </div>
-
-                    <!-- Calculate Button -->
-                    <div class="composer-button-container">
-                        <button id="calculateTeams" type="button" class="btn btn-primary">Calculate Team Composition</button>
-                    </div>
-
-                    <!-- Results Display -->
-                    <div id="composerResults" class="composer-results">
-                        <!-- Results populated by JS -->
-                    </div>
-                </div>
-
-                <!-- Strand Tabs Content -->
-                <div id="strandsTabsContent" class="strands-tabs-content"></div>
-            </div>
-        </section>
-
-        <!-- Expiring Certifications Alert -->
-        <section id="expiringSection" class="expiring-section" style="display: none;">
-            <h2>⚠️ Certifications Expiring Soon (90 Days)</h2>
-            <div id="expiringContainer" class="expiring-container"></div>
-        </section>
+<div class="app">
+<header><div class="headrow"><div class="brandLockup"><div class="rtMark" aria-hidden="true"><span>NZRT</span></div><div><div class="title">NZ Response Team Capability Planner</div><div class="subtitle">Qualifications, strand readiness & deployment planning</div><div class="rtContext">Offline operational tool</div></div></div><div class="fileStatus" id="fileStatus">No CSV loaded</div></div></header>
+<nav id="tabs">
+<button class="tab active" data-view="overview">Overview</button>
+<button class="tab" data-view="strands">Strands</button>
+<button class="tab" data-view="members">Members</button>
+<button class="tab" data-view="deployment">Deployment</button>
+<button class="tab" data-view="settings">Data & Settings</button>
+</nav>
+<main>
+<section id="overview" class="view active">
+  <div class="toolbar">
+    <label class="btn primary filebtn">Load D4H CSV<input id="csvInputTop" type="file" accept=".csv,text/csv"></label>
+    <button class="btn" id="demoHelp">How status is calculated</button>
+  </div>
+  <div id="overviewEmpty" class="card empty">Load a D4H qualifications CSV to begin.</div>
+  <div id="overviewContent" class="hidden">
+    <div class="grid kpi" id="kpis"></div>
+    <div class="sectionTitle"><h2>Capability strands</h2><div class="legend"><span><i class="statusDot dot-ok"></i>Meets minimum</span><span><i class="statusDot dot-warn"></i>Data gap / near minimum</span><span><i class="statusDot dot-bad"></i>Below minimum</span></div></div>
+    <div class="strandGrid" id="overviewStrands"></div>
+    <div class="sectionTitle"><h2>Data quality</h2></div><div class="card" id="dataQuality"></div>
+  </div>
+</section>
+<section id="strands" class="view">
+  <div class="toolbar"><select class="select" id="strandSelect"></select><button class="btn" id="printStrand">Print / Save PDF</button></div>
+  <div id="strandDetail" class="card empty">Load a CSV and select a strand.</div>
+</section>
+<section id="members" class="view">
+  <div class="split">
+    <div class="card listPanel"><input id="memberSearch" class="search" placeholder="Search members"><div id="memberList"></div></div>
+    <div id="memberDetail" class="card empty">Select a team member.</div>
+  </div>
+</section>
+<section id="deployment" class="view">
+  <div class="card" style="margin-bottom:14px">
+    <div class="sectionTitle" style="margin-top:0"><div><h2>Deployment planner</h2><div class="small">Build the attending crew, required capabilities, assignments and logistics readiness for a callout.</div></div><div class="deployActions noPrint"><button class="btn" id="newDeployment">New plan</button><button class="btn" id="saveDeployment">Export plan JSON</button><label class="btn filebtn">Load plan JSON<input id="loadDeployment" type="file" accept=".json,application/json"></label><button class="btn" id="printDeployment">Print / Save PDF</button></div></div>
+    <div class="deployMeta">
+      <div class="field wide"><label>Incident / deployment name</label><input id="depName" placeholder="e.g. Flood response - Waimakariri"></div>
+      <div class="field"><label>Date / time</label><input id="depDate" type="datetime-local"></div>
+      <div class="field"><label>Tasking agency</label><input id="depAgency" placeholder="CDEM / Police / FENZ"></div>
+      <div class="field wide" style="grid-column:1/-1"><label>Location / tasking / notes</label><textarea id="depNotes" placeholder="Operational objective, location, staging point, constraints…"></textarea></div>
     </div>
-
-    <!-- Person Detail Modal -->
-    <div id="personModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalPersonName"></h2>
-                <button type="button" class="modal-close" onclick="app.closePersonModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="personStatus" class="person-status"></div>
-                <h3>Capability Strand Qualifications</h3>
-                <div id="personStrandsList" class="person-strands-list"></div>
-            </div>
-        </div>
+  </div>
+  <div class="card" style="margin-bottom:14px"><div class="templateBar"><div><h3 style="margin-bottom:3px">Deployment template</h3><div class="small">Start with a preset, then add or remove capability requirements below.</div></div><select class="select" id="deploymentTemplate"><option value="">Custom deployment</option></select><button class="btn primary" id="applyTemplate">Apply template</button></div><div id="templateDescription" class="deploymentNote">Templates are planning presets and remain editable.</div></div>
+  <div class="toolbar noPrint"><button class="btn" id="selectAllOperational">Select operational</button><button class="btn" id="clearAttendees">Clear attendees</button><button class="btn" id="clearSkills">Clear requirements</button><button class="btn" id="addTeam">+ Add crew/team</button></div>
+  <div id="deploymentRisk" class="riskBanner warn" style="margin-bottom:14px">Load a D4H CSV and select attendees to assess readiness.</div>
+  <div class="deployLayout">
+    <div class="grid">
+      <div class="card"><h3>1. Attending members</h3><div class="small" id="attendingCount"></div><input id="deployMemberSearch" class="search noPrint" placeholder="Filter members" style="margin:8px 0"><div id="deployMembers" class="checklist"></div></div>
+      <div class="card"><h3>2. Required capability</h3><div class="small">Select complete strands and/or specialist roles for this deployment.</div><div id="deployRequirements" class="checklist" style="margin-top:8px"></div></div>
     </div>
-
-    <!-- Course Detail Modal -->
-    <div id="courseModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalCourseName"></h2>
-                <button type="button" class="modal-close" onclick="app.closeCourseModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="course-summary-stats">
-                    <div class="stat-box">
-                        <div class="stat-box-label">Total Personnel</div>
-                        <div class="stat-box-value" id="courseTotalPersonnel">0</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-box-label">Completed</div>
-                        <div class="stat-box-value completed" id="courseCompleted">0</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-box-label">Missing</div>
-                        <div class="stat-box-value missing" id="courseMissing">0</div>
-                    </div>
-                </div>
-
-                <h3>Required in Capability Strands</h3>
-                <div id="courseStrands" class="course-strands-list"></div>
-
-                <h3>Personnel Who Have Completed</h3>
-                <div id="courseCompletedList" class="course-personnel-list"></div>
-
-                <h3>Personnel Missing This Course</h3>
-                <div id="courseMissingList" class="course-personnel-list"></div>
-            </div>
-        </div>
+    <div class="grid">
+      <div class="card"><h3>Deployment readiness</h3><div id="deploySummary" class="summaryStrip"></div><div id="deployCoverage" class="coverage"></div></div>
+      <div class="card"><div class="sectionTitle" style="margin-top:0"><div><h3 style="margin:0">3. Crew / team board</h3><div class="small">Assign attendees to working teams. Team cards show mapped capability coverage for the selected requirements.</div></div></div><div id="crewBoard" class="crewBoard"></div></div>
+      <div class="card"><h3>4. Specialist role assignments</h3><div class="small">Assign qualified attendees to specialist slots. Duplicate assignments are highlighted for review.</div><div id="assignmentGrid" class="assignmentGrid" style="margin-top:10px"></div></div>
+      <div class="card"><h3>5. Equipment & logistics readiness</h3><div class="small">Operational planning checklist. Out-of-region items reflect the framework's self-sufficiency requirements; other items are configurable planning prompts rather than qualification evidence.</div><div id="equipmentChecklist" class="equipGrid" style="margin-top:10px"></div></div>
+      <div class="card"><h3>Attendee qualification matrix</h3><div id="deployMatrix"></div></div>
     </div>
-
-    <div class="container">
-        <!-- Footer -->
-        <footer class="footer">
-            <p>D4H Training Report Generator | NZRT Capability Framework v3 | Report generated: <span id="timestamp"></span></p>
-        </footer>
-    </div>
-
-    <!-- Scripts -->
-    <script src="config.js"></script>
-    <script src="script.js"></script>
-
-    <!-- Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
-                    .then(reg => {
-                        console.log('[PWA] Service Worker registered:', reg.scope);
-                    })
-                    .catch(err => {
-                        console.error('[PWA] Service Worker registration failed:', err);
-                    });
-            });
-        }
-    </script>
+  </div>
+</section>
+<section id="settings" class="view">
+  <div class="grid">
+    <div class="card"><h3>Data import</h3><p class="small">The app runs entirely in your browser. CSV data is not uploaded anywhere.</p><div class="toolbar"><label class="btn primary filebtn">Load D4H CSV<input id="csvInputSettings" type="file" accept=".csv,text/csv"></label><button id="clearData" class="btn danger">Clear loaded data</button></div><div id="importInfo" class="notice">No CSV loaded.</div></div>
+    <div class="card"><h3>Qualification interpretation</h3><div class="notice warning">D4H values are interpreted as: <b>Yes</b> = current; a date = expiry/current-to date; <b>?</b>, <b>-</b> or blank = not held. A past date is treated as expired. You can change the “expiry warning” period below.</div><div class="toolbar" style="margin-top:12px"><label>Warn when expiry is within <input id="expiryDays" type="number" min="0" max="3650" value="90" style="width:90px;padding:8px;border:1px solid var(--line);border-radius:8px"> days</label></div></div>
+    <div class="card"><h3>Capability framework configuration</h3><p class="small">A built-in configuration is derived from the May 2026 NZRT Capability and Competency Framework v4.0, with local team-composition interpretations where configured. You can export it, edit it, then reload it without changing this HTML file.</p><div class="toolbar"><button id="exportConfig" class="btn">Export framework JSON</button><label class="btn filebtn">Load framework JSON<input id="configInput" type="file" accept=".json,application/json"></label><button id="resetConfig" class="btn">Reset built-in framework</button></div><div id="configInfo" class="small"></div></div>
+    <div class="card"><h3>Important data gaps</h3><div id="mappingGaps"></div></div>
+  </div>
+</section>
+</main>
+</div>
+<div class="modalBack" id="modalBack"><div class="modal"><div class="modalHead"><h3 id="modalTitle">Status calculation</h3><button class="modalClose" id="modalClose">×</button></div><div id="modalBody"></div></div></div>
+<script type="application/json" id="frameworkConfig">
+{
+  "meta":{"name":"NZRT Capability and Competency Framework","version":"May 2026 v4.0","expiryWarningDays":90},
+  "strands":[
+    {"id":"foundation","name":"NZRT Foundation","minTeam":8,"type":"strand","specialistRoles":[
+      {"role":"team_leader","kind":"compulsory","min":2,"label":"Team Leaders"},
+      {"role":"medic","kind":"compulsory","min":2,"label":"Team Medics"},
+      {"role":"driver","kind":"compulsory","min":2,"label":"Team Drivers"}
+    ],"requirements":[
+      {"id":"fa_manage","label":"Manage first aid in emergency situations","kind":"compulsory","min":8,"rule":{"any":["6400","41051"]}},
+      {"id":"fa_admin","label":"Provide / administer first aid","kind":"compulsory","min":8,"rule":{"any":["6401","41052"]}},
+      {"id":"fa_bls","label":"Provide / administer basic life support","kind":"compulsory","min":8,"rule":{"any":["6402","41053"]}},
+      {"id":"pfa","label":"Psychological first aid","kind":"compulsory","min":8,"rule":{"any":["Psychological or Mental First Aid","NZRT Psychological First Aid"]}},
+      {"id":"hs","label":"Workplace health & safety","kind":"compulsory","min":8,"rule":{"any":["497","17593","Health & Safety and NZRT Safety Officer"]}},
+      {"id":"stress","label":"Critical incident stress","kind":"compulsory","min":8,"rule":{"any":["12355","Critical Incident Stress"]}},
+      {"id":"cims_basic","label":"Basic knowledge of NZ CIMS","kind":"compulsory","min":8,"rule":{"any":["17279","32158","40717","ITF Foundation Course"]}},
+      {"id":"cordon","label":"Cordons / movement control","kind":"compulsory","min":8,"rule":{"any":["7332","40693"]}},
+      {"id":"radio","label":"Two-way radio / CDEM communications","kind":"compulsory","min":8,"rule":{"any":["4573","40709"]}},
+      {"id":"aircraft","label":"Aircraft safety","kind":"compulsory","min":8,"rule":{"any":["20388","Aircraft Safety"]}},
+      {"id":"culture","label":"Intercultural competence","kind":"compulsory","min":8,"rule":{"any":["11099","1304","Mana Aki Intercultural Competence"]}},
+      {"id":"iwi","label":"Working in partnership with iwi Māori","kind":"recommended","min":8,"rule":{"any":["40711"]}}
+    ]},
+    {"id":"light_rescue","name":"Light Rescue","minTeam":8,"type":"strand","requirements":[
+      {"id":"lr_rescue","label":"General rescue / rescue casualties","kind":"compulsory","min":8,"rule":{"any":["10618",{"all":["20473","24500"]},{"all":["40695","40720"]}]}},
+      {"id":"lr_usar_support","label":"Support at USAR operations","kind":"compulsory","min":8,"rule":{"any":["18516","40699"]}},
+      {"id":"lr_triage","label":"Mass Casualty Incident Triage practical assessment","kind":"compulsory","min":8,"rule":{"any":["Mass Casualty Incident Triage"]}}
+    ]},
+    {"id":"flood","name":"Flood Response","minTeam":8,"type":"strand","requirements":[
+      {"id":"fl_response","label":"Respond to flood incidents","kind":"compulsory","min":8,"rule":{"any":["22297","40697"]}},
+      {"id":"fl_safety","label":"Work safely at flood incidents","kind":"compulsory","min":8,"rule":{"any":["22298","40696"]}},
+      {"id":"fl_land","label":"Landslide Awareness","kind":"compulsory","min":8,"rule":{"any":["Landslide Awareness"]}}
+    ]},
+    {"id":"storm","name":"Storm Response","minTeam":8,"type":"strand","specialistRoles":[
+      {"role":"chainsaw","kind":"optional","min":2,"label":"Chainsaw Operators","note":"Optional capability"}
+    ],"requirements":[
+      {"id":"st_height","label":"Working safely at height","kind":"compulsory","min":8,"rule":{"any":["17600","23229"]}},
+      {"id":"st_equip","label":"Inspect and maintain height safety equipment","kind":"compulsory","min":8,"rule":{"any":["19359"]}},
+      {"id":"st_ops","label":"Storm damage operations","kind":"compulsory","min":8,"rule":{"any":["23694","40698"]}},
+      {"id":"st_land","label":"Landslide Awareness","kind":"compulsory","min":8,"rule":{"any":["Landslide Awareness"]}}
+    ]},
+    {"id":"welfare","name":"Civil Defence Centre & Welfare","minTeam":8,"type":"strand","memberLevels":[
+      {"label":"Support / Needs Assessment","rule":{"any":["7336",{"all":["40684","40691"]},"CDEM Group welfare training"]}},
+      {"label":"Lead / Supervisor","rule":{"any":["7330","40692"]}}
+    ],"requirements":[
+      {"id":"we_cdc","label":"Support CD Centre and needs assessment","kind":"compulsory","min":8,"rule":{"any":["7336",{"all":["40684","40691"]},"CDEM Group welfare training"]}},
+      {"id":"we_lead","label":"Lead / supervise CD Centre","kind":"recommended","min":2,"rule":{"any":["7330","40692"]}},
+      {"id":"we_animal","label":"Companion animal welfare","kind":"recommended","min":2,"rule":{"any":["23695","40685","40689","40690","Animal Welfare in Emergency Management"]}}
+    ]},
+    {"id":"swiftwater","name":"Swift Water Rescue","minTeam":8,"type":"strand",
+      "memberLevels":[
+        {"label":"Awareness","rule":{"any":["Swift Water Awareness Theory"]}},
+        {"label":"Responder","rule":{"any":["Swift Water Awareness/Responder","Swift water Responder"]}},
+        {"label":"Technician","rule":{"any":["Swift Water Technician"]}},
+        {"label":"Advanced","rule":{"any":["Swift Water Specialist","Swift water Advanced"]}}
+      ],
+      "specialistRoles":[
+        {"role":"boat","kind":"optional","min":2,"label":"Flood Rescue Boat Operators","note":"Optional capability"}
+      ],
+      "memberRule":{"any":["Swift Water Awareness/Responder","Swift water Responder","Swift Water Technician"]},
+      "requirements":[
+      {"id":"sw_operational","label":"Swift water operational members (Responder or Technician)","kind":"compulsory","min":8,"rule":{"any":["Swift Water Awareness/Responder","Swift water Responder","Swift Water Technician"]}},
+      {"id":"sw_tech","label":"Swift water Technicians (minimum within the team of 8)","kind":"compulsory","min":2,"rule":{"any":["Swift Water Technician"]}},
+      {"id":"sw_adv","label":"Swift water Advanced","kind":"recommended","min":2,"rule":{"any":["Swift Water Specialist","Swift water Advanced"]}},
+      {"id":"sw_viw","label":"Rescues from Vehicles in Water","kind":"recommended","min":2,"rule":{"any":["Rescue From Vehicles in Water"]}}
+    ]},
+    {"id":"rope","name":"Rope Rescue","minTeam":8,"type":"strand","memberLevels":[
+      {"label":"Awareness / Support","rule":{"any":["20536","40864","FENZ Lines Rescue L1"]}},
+      {"label":"Responder / Operator","rule":{"any":["20537","40865","Rope Rescue Responder/Operator","FENZ Lines Rescue L2"]}},
+      {"label":"Technician","rule":{"any":["20538","40866","Rope Rescue Technician","FENZ Lines Rescue L3"]}},
+      {"label":"Specialist","rule":{"any":["20539","40867","Rope Rescue Specialist","FENZ Lines Rescue L4"]}}
+    ],"requirements":[
+      {"id":"rr_aw","label":"Rope rescue awareness / support operations","kind":"compulsory","min":8,"rule":{"any":["20536","40864","FENZ Lines Rescue L1"]}},
+      {"id":"rr_resp","label":"Rope rescue responder / operator","kind":"compulsory","min":8,"rule":{"any":["20537","40865","Rope Rescue Responder/Operator","FENZ Lines Rescue L2"]}},
+      {"id":"rr_tech","label":"Rope rescue technician","kind":"compulsory","min":4,"rule":{"any":["20538","40866","Rope Rescue Technician","FENZ Lines Rescue L3"]}},
+      {"id":"rr_spec","label":"Rope rescue specialist","kind":"recommended","min":4,"rule":{"any":["20539","40867","Rope Rescue Specialist","FENZ Lines Rescue L4"]}}
+    ]},
+    {"id":"usar_fr","name":"USAR First Responder","minTeam":8,"type":"strand","requirements":[
+      {"id":"uf_pre","label":"USAR First Responder pre-course and quiz","kind":"compulsory","min":8,"rule":{"any":["USAR First Responder Pre-course and Quiz"]}},
+      {"id":"uf_course","label":"FENZ USAR First Responder course","kind":"compulsory","min":8,"rule":{"any":["FENZ First Responder USAR Course"]}}
+    ]}
+  ],
+  "roles":[
+    {"id":"team_leader","name":"Team Leader","type":"role","requirements":[
+      {"id":"tl1","label":"Operational briefings / lead emergency response teams","kind":"compulsory","min":2,"rule":{"any":["23690","40860"]}},
+      {"id":"tl2","label":"Leadership theory / lead during response","kind":"compulsory","min":2,"rule":{"any":["23698","40859"]}},
+      {"id":"tl3","label":"CIMS operations knowledge","kind":"compulsory","min":2,"rule":{"any":["22445","29553","40718","ITF Intermediate"]}},
+      {"id":"tl4","label":"Apply CIMS during response","kind":"compulsory","min":2,"rule":{"any":["29554","40719","ITF Intermediate"]}},
+      {"id":"tl5","label":"Controller's Powers","kind":"recommended","min":2,"rule":{"any":["7335","Controller's Powers"]}}
+    ]},
+    {"id":"medic","name":"Team Medic","type":"role","requirements":[
+      {"id":"med1","label":"PHEC / emergency care / current clinician certification","kind":"compulsory","min":2,"rule":{"any":[{"all":["14473","25411","25412"]},"29321 PHEC","29321","First Responder","EMT","Paramedic","New Zealand Certificate in Emergency Care"]}}
+    ]},
+    {"id":"driver","name":"Team Driver","type":"role","requirements":[
+      {"id":"drv1","label":"NZRT emergency driving knowledge","kind":"compulsory","min":2,"rule":{"any":["23692","40694","NZRT Driving"]}},
+      {"id":"drv2","label":"4WD knowledge","kind":"compulsory","min":2,"rule":{"any":["17976"]}},
+      {"id":"drv3","label":"Operate light 4WD off-road","kind":"compulsory","min":2,"rule":{"any":["17978"]}},
+      {"id":"drv4","label":"4WD recovery","kind":"recommended","min":2,"rule":{"any":["20620"]}}
+    ]},
+    {"id":"chainsaw","name":"Chainsaw Operator","type":"role","requirements":[
+      {"id":"chain1","label":"Basic chainsaw operation","kind":"compulsory","min":2,"rule":{"any":["6917"]}}
+    ]},
+    {"id":"boat","name":"Swift Water Boat Operator","type":"role","requirements":[
+      {"id":"boat1","label":"Flood Rescue Boat Operator","kind":"compulsory","min":2,"rule":{"any":["Flood Rescue Boat Operator"]}},
+      {"id":"boat2","label":"Swift Water Rescue Boat Operator","kind":"recommended","min":2,"rule":{"any":["Swift Water Rescue Boat Operator"]}}
+    ]},
+    {"id":"out_region","name":"Out-of-Region Personal Readiness","type":"role","requirements":[
+      {"id":"oor1","label":"Personal readiness (local D4H field)","kind":"local","min":1,"rule":{"any":["Personal Readiness"]}}
+    ]}
+  ],
+  "deploymentChecklist":[
+    {"id":"comms","label":"Communications / radios checked","group":"General"},
+    {"id":"ppe","label":"Task-appropriate PPE available","group":"General"},
+    {"id":"medical","label":"First aid / medical kit available","group":"General"},
+    {"id":"transport","label":"Suitable vehicles / transport confirmed","group":"General"},
+    {"id":"taskkit","label":"Strand-specific equipment / cache confirmed","group":"General"},
+    {"id":"briefing","label":"Tasking, briefing and communications plan confirmed","group":"General"},
+    {"id":"boo","label":"Base of Operations capability","group":"Out-of-region","outRegion":true},
+    {"id":"accom","label":"Accommodation and sanitation for 72 hours","group":"Out-of-region","outRegion":true},
+    {"id":"food","label":"Food and water for 72 hours","group":"Out-of-region","outRegion":true},
+    {"id":"power","label":"Power and lighting for 72 hours","group":"Out-of-region","outRegion":true},
+    {"id":"fuel","label":"Fuel / resupply arrangements for 72 hours","group":"Out-of-region","outRegion":true}
+  ],
+  "deploymentTemplates":[
+    {"id":"foundation","name":"Foundation deployment","description":"Foundation capability plus the Foundation specialist team functions.","needs":["foundation","team_leader","medic","driver"]},
+    {"id":"light_rescue","name":"Light Rescue deployment","description":"Foundation baseline, Light Rescue capability, and Foundation specialist team functions.","needs":["foundation","light_rescue","team_leader","medic","driver"]},
+    {"id":"flood","name":"Flood Response deployment","description":"Foundation baseline, Flood Response capability, and Foundation specialist team functions.","needs":["foundation","flood","team_leader","medic","driver"]},
+    {"id":"storm","name":"Storm Response deployment","description":"Foundation baseline, Storm Response capability, and Foundation specialist team functions. Add Chainsaw Operator when required by the tasking.","needs":["foundation","storm","team_leader","medic","driver"]},
+    {"id":"welfare","name":"CDC & Welfare deployment","description":"Foundation baseline, Civil Defence Centre & Welfare capability, and Foundation specialist team functions.","needs":["foundation","welfare","team_leader","medic","driver"]},
+    {"id":"swiftwater","name":"Swift Water Rescue deployment","description":"Foundation baseline, Swift Water Rescue capability, and Foundation specialist team functions. Add Boat Operator when boat operations are required.","needs":["foundation","swiftwater","team_leader","medic","driver"]},
+    {"id":"rope","name":"Rope Rescue deployment","description":"Foundation baseline, Rope Rescue capability, and Foundation specialist team functions.","needs":["foundation","rope","team_leader","medic","driver"]},
+    {"id":"usar_fr","name":"USAR First Responder deployment","description":"Foundation baseline, USAR First Responder capability, and Foundation specialist team functions.","needs":["foundation","usar_fr","team_leader","medic","driver"]},
+    {"id":"out_region","name":"Out-of-Region readiness check","description":"Adds the local Personal Readiness field to a Foundation deployment. The framework also contains team-level logistics and self-sufficiency requirements that are not represented in the D4H qualification CSV.","needs":["foundation","team_leader","medic","driver","out_region"]}
+  ]
+}
+</script>
+<script>
+(()=>{
+'use strict';
+const builtInConfig=JSON.parse(document.getElementById('frameworkConfig').textContent);
+let config=structuredCloneSafe(builtInConfig), headers=[], members=[], colMap=new Map(), currentMember=null, currentStrand=null;
+let attendeeIds=new Set(), selectedNeeds=new Set(), crewAssignments={}, deploymentTeams=[{id:"team1",name:"Alpha"}], memberTeams={}, equipmentState={}, deploymentMeta={name:"",date:"",agency:"",notes:""};
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+function structuredCloneSafe(o){return JSON.parse(JSON.stringify(o))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function norm(s){return String(s??'').toLowerCase().replace(/\[[^\]]*\]/g,' ').replace(/[–—-]/g,' ').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim()}
+function parseCSV(text){
+  const rows=[];let row=[],field='',q=false;
+  for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];if(q){if(c==='"'&&n==='"'){field+='"';i++}else if(c==='"'){q=false}else field+=c}else{if(c==='"')q=true;else if(c===','){row.push(field);field=''}else if(c==='\n'){row.push(field);rows.push(row);row=[];field=''}else if(c!=='\r')field+=c}}
+  if(field.length||row.length){row.push(field);rows.push(row)} return rows;
+}
+function parseDate(v){const m=String(v).trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);if(!m)return null;const d=new Date(+m[3],+m[2]-1,+m[1],12);return isNaN(d)?null:d}
+function cellState(v){
+ const t=String(v??'').trim(); if(!t||t==='-'||t==='?')return {s:'missing',label:'Not held'}; if(/^yes$/i.test(t))return {s:'current',label:'Current'};
+ const d=parseDate(t); if(d){const now=new Date();now.setHours(0,0,0,0);const days=Math.ceil((d-now)/86400000);if(days<0)return {s:'expired',label:'Expired '+t,date:d};if(days<=expiryWarning())return {s:'warning',label:'Expires '+t,date:d};return {s:'current',label:'Current to '+t,date:d}}
+ return {s:'current',label:t};
+}
+function expiryWarning(){return Math.max(0,+($('#expiryDays')?.value||config.meta.expiryWarningDays||90))}
+function buildColMap(){colMap=new Map();headers.forEach((h,i)=>{const n=norm(h);colMap.set(n,i)});}
+function findColumn(token){
+ const n=norm(token); if(colMap.has(n))return colMap.get(n);
+ // Prefer token at start / whole unit number to avoid accidental matches.
+ const unit=String(token).match(/^\d{3,5}/)?.[0]; if(unit){for(let i=0;i<headers.length;i++){if(new RegExp('(^|\\D)'+unit+'(\\D|$)').test(headers[i]))return i}}
+ for(let i=0;i<headers.length;i++){const hn=norm(headers[i]);if(hn.includes(n)||n.includes(hn))return i} return -1;
+}
+function evalToken(member,token){const ci=findColumn(token);if(ci<0)return {s:'unmapped',token,details:'No matching D4H column'};const val=member.cells[ci]??'';const st=cellState(val);return {...st,token,column:headers[ci],value:val}}
+function combine(states,mode){
+ if(mode==='any'){
+  if(states.some(x=>x.s==='current'))return {s:'current',children:states};
+  if(states.some(x=>x.s==='warning'))return {s:'warning',children:states};
+  if(states.every(x=>x.s==='unmapped'))return {s:'unmapped',children:states};
+  if(states.some(x=>x.s==='unmapped'))return {s:'unmapped',children:states};
+  return {s:'missing',children:states};
+ } else {
+  if(states.some(x=>['missing','expired'].includes(x.s)))return {s:'missing',children:states};
+  if(states.some(x=>x.s==='unmapped'))return {s:'unmapped',children:states};
+  if(states.some(x=>x.s==='warning'))return {s:'warning',children:states};
+  return {s:'current',children:states};
+ }
+}
+function evalRule(member,rule){if(typeof rule==='string')return evalToken(member,rule);if(rule.any)return combine(rule.any.map(x=>evalRule(member,x)),'any');if(rule.all)return combine(rule.all.map(x=>evalRule(member,x)),'all');return {s:'unmapped'}}
+function evalReq(member,req){return evalRule(member,req.rule)}
+function compulsory(entity){return entity.requirements.filter(r=>r.kind==='compulsory'||r.kind==='local')}
+function evalEntityMember(member,entity){if(entity.memberRule)return evalRule(member,entity.memberRule);const rs=compulsory(entity).map(r=>evalReq(member,r));if(!rs.length)return {s:'unmapped'};if(rs.some(x=>x.s==='missing'))return {s:'missing'};if(rs.some(x=>x.s==='unmapped'))return {s:'unmapped'};if(rs.some(x=>x.s==='warning'))return {s:'warning'};return {s:'current'}}
+function qualifiedForReq(req,pool=members){return pool.filter(m=>{const s=evalReq(m,req).s;return s==='current'||s==='warning'})}
+function qualifiedForEntity(entity,pool=members){return pool.filter(m=>{const s=evalEntityMember(m,entity).s;return s==='current'||s==='warning'})}
+function specialistStatusForStrand(entity,pool=members){
+ const refs=(entity.specialistRoles||[]).map(sr=>{const role=config.roles.find(r=>r.id===sr.role);if(!role)return {...sr,role:null,count:0,status:'unmapped',met:false};const count=qualifiedForEntity(role,pool).length;const rs=entityStatus(role,pool);const min=sr.min||roleSlotCount(role)||1;return {...sr,role,count,min,status:rs.s,met:count>=min}});return refs;
+}
+function entityStatus(entity,pool=members){
+ const reqs=compulsory(entity); if(!members.length)return {s:'na',qualified:0,min:entity.minTeam||Math.max(...reqs.map(r=>r.min||0),0),specialists:[]};
+ const counts=reqs.map(r=>({r,count:qualifiedForReq(r,pool).length,unmapped:members.every(m=>evalReq(m,r).s==='unmapped')}));
+ const min=entity.minTeam||Math.max(...reqs.map(r=>r.min||0),0); const coreMeet=counts.every(x=>x.count>=(x.r.min||min)); const anyUnmapped=counts.some(x=>x.unmapped);
+ const specialists=entity.type==='strand'?specialistStatusForStrand(entity,pool):[];const requiredSpecialists=specialists.filter(x=>x.kind==='compulsory');
+ const specialistsMeet=requiredSpecialists.every(x=>x.met);const specialistUnmapped=requiredSpecialists.some(x=>x.status==='warn'||x.status==='na'||x.status==='unmapped');
+ const allMeet=coreMeet&&specialistsMeet;let s=allMeet?((anyUnmapped||specialistUnmapped)?'warn':'ok'):'bad';if(!allMeet&&(anyUnmapped||specialistUnmapped))s='warn';
+ return {s,qualified:qualifiedForEntity(entity,pool).length,min,counts,specialists};
+}
+function stateBadge(s,label){const c=(s==='current'||s==='ok')?'ok':s==='warning'||s==='warn'?'warn':s==='unmapped'||s==='na'?'na':'bad';return `<span class="badge ${c}">${esc(label||({current:'Current',ok:'Meets minimum',warning:'Warning',warn:'Warning',unmapped:'Not mapped',missing:'Missing',expired:'Expired'}[s]||s))}</span>`}
+function loadText(file,cb){const r=new FileReader();r.onload=()=>cb(r.result);r.onerror=()=>alert('Could not read file.');r.readAsText(file)}
+function importCSV(file){loadText(file,text=>{const rows=parseCSV(text);if(rows.length<2){alert('The CSV does not contain data rows.');return}headers=rows[0].map(x=>x.trim());buildColMap();members=rows.slice(1).filter(r=>r.some(x=>String(x).trim())).map((r,i)=>({id:i,name:(r[0]||`Member ${i+1}`).trim(),status:(r[1]||'').trim(),cells:r}));currentMember=members[0]?.id??null;attendeeIds.clear();selectedNeeds.clear();crewAssignments={};deploymentTeams=[{id:"team1",name:"Alpha"}];memberTeams={};equipmentState={};$('#fileStatus').textContent=`${file.name} • ${members.length} members`;$('#importInfo').innerHTML=`Loaded <b>${esc(file.name)}</b><br>${members.length} member rows • ${headers.length} qualification columns`;renderAll()})}
+function allEntities(){return [...config.strands,...config.roles]}
+function renderAll(){renderOverview();renderStrandControls();renderMembers();renderDeployment();renderSettings()}
+function renderOverview(){
+ const has=members.length>0;$('#overviewEmpty').classList.toggle('hidden',has);$('#overviewContent').classList.toggle('hidden',!has);if(!has)return;
+ const operational=members.filter(m=>/operational/i.test(m.status)).length;const notHeldCells=members.reduce((a,m)=>a+m.cells.filter(v=>['?','-',''].includes(String(v).trim())).length,0);const expiring=members.reduce((a,m)=>a+m.cells.filter(v=>cellState(v).s==='warning').length,0);const meets=config.strands.filter(s=>entityStatus(s).s==='ok').length;
+ $('#kpis').innerHTML=[['Members',members.length,`${operational} operational`],['Strands meeting minimum',`${meets}/${config.strands.length}`,'Based on mapped compulsory requirements'],['Not held values',notHeldCells,'D4H cells marked ?, - or blank'],['Expiring soon',expiring,`Within ${expiryWarning()} days`]].map(x=>`<div class="card kpiCard"><div class="label">${x[0]}</div><div class="value">${x[1]}</div><div class="note">${x[2]}</div></div>`).join('');
+ $('#overviewStrands').innerHTML=config.strands.map(s=>{const st=entityStatus(s),pct=Math.min(100,st.min?Math.round(st.qualified/st.min*100):0);const spec=(st.specialists||[]).map(x=>`${esc(x.label||x.role?.name||x.role)} ${x.count}/${x.min}${x.kind==='optional'?' optional':''}`).join(' • ');return `<div class="card strandCard" data-strand="${s.id}"><div class="strandTop"><div class="strandName">${esc(s.name)}</div>${stateBadge(st.s,st.s==='ok'?'Meets minimum':st.s==='warn'?'Review data':'Below minimum')}</div><div class="progress"><span style="width:${pct}%"></span></div><div class="metricRow"><span>${st.qualified} fully qualified individuals</span><span>base min ${st.min}</span></div>${spec?`<div class="small" style="margin-top:8px">${spec}</div>`:''}</div>`}).join('');
+ $$('#overviewStrands .strandCard').forEach(el=>el.onclick=()=>{currentStrand=el.dataset.strand;showView('strands');$('#strandSelect').value=currentStrand;renderStrand()});
+ const mapped=headers.slice(3).filter(h=>allConfigTokens().some(t=>findColumn(t)===headers.indexOf(h))).length;const gaps=unmappedTokens();$('#dataQuality').innerHTML=`<b>${mapped}</b> D4H qualification columns are referenced by the framework mapping. <b>${gaps.length}</b> framework qualification aliases have no matching column in this CSV. Unmapped requirements are shown explicitly rather than assumed.`;
+}
+function renderStrandControls(){const sel=$('#strandSelect');sel.innerHTML=config.strands.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');if(!currentStrand)currentStrand=config.strands[0]?.id;if(currentStrand)sel.value=currentStrand;renderStrand()}
+function isOperationalMember(m){return /^operational$/i.test(String(m.status||'').trim())}
+function highestQualificationForStrand(m,s){
+ if(!s.memberLevels||!s.memberLevels.length)return null;
+ let best=null;
+ s.memberLevels.forEach((level,index)=>{const ev=evalRule(m,level.rule);if(ev.s==='current'||ev.s==='warning')best={label:level.label,rank:index,state:ev.s}});
+ return best;
+}
+function sortQualifiedByLevel(membersList,s){
+ return [...membersList].sort((a,b)=>{
+   const al=highestQualificationForStrand(a,s), bl=highestQualificationForStrand(b,s);
+   const ar=al?al.rank:-1, br=bl?bl.rank:-1;
+   return br-ar || a.name.localeCompare(b.name);
+ });
+}
+function missingForStrandMember(m,s){
+ if(s.memberRule){const ev=evalRule(m,s.memberRule);return (ev.s==='current'||ev.s==='warning')?[]:[ruleText(s.memberRule)]}
+ return compulsory(s).filter(r=>{const ev=evalReq(m,r);return ev.s!=='current'&&ev.s!=='warning'}).map(r=>r.label)
+}
+function renderStrand(){
+ const box=$('#strandDetail');
+ if(!members.length){box.className='card empty';box.textContent='Load a CSV and select a strand.';return}
+ const s=config.strands.find(x=>x.id===($('#strandSelect').value||currentStrand));if(!s)return;currentStrand=s.id;
+ const st=entityStatus(s), operational=members.filter(isOperationalMember), qual=sortQualifiedByLevel(qualifiedForEntity(s,operational),s), qualIds=new Set(qual.map(m=>m.id));
+ const unqual=operational.filter(m=>!qualIds.has(m.id));
+ const gaps=unqual.map(m=>({m,missing:missingForStrandMember(m,s)}));
+ const gapCounts={};gaps.forEach(x=>x.missing.forEach(label=>gapCounts[label]=(gapCounts[label]||0)+1));
+ const gapSummary=Object.entries(gapCounts).sort((a,b)=>b[1]-a[1]).map(([label,n])=>`<span class="missingChip">${esc(label)} · ${n}</span>`).join('');
+ const specs=st.specialists||[];
+ const reqHtml=`<details class="collapseSection" open><summary>Capability requirements <span class="small">${s.requirements.length} requirement(s)</span></summary><div class="collapseBody"><div class="tableWrap"><table class="table"><thead><tr><th>Requirement</th><th>Type</th><th>Minimum</th><th>Current</th><th>Status</th></tr></thead><tbody>${s.requirements.map(r=>{const q=qualifiedForReq(r), unm=members.every(m=>evalReq(m,r).s==='unmapped'), met=q.length>=(r.min||s.minTeam||0);return `<tr><td><b>${esc(r.label)}</b><div class="small">${ruleText(r.rule)}</div></td><td>${esc(r.kind)}</td><td>${r.min||''}</td><td>${q.length}</td><td>${unm?stateBadge('unmapped','No D4H field'):stateBadge(met?'current':'missing',met?'Meets':'Gap')}</td></tr>`}).join('')}</tbody></table></div></div></details>`;
+ const specialistHtml=specs.length?`<details class="collapseSection" open><summary>Specialist team requirements <span class="small">${specs.length} specialist requirement(s)</span></summary><div class="collapseBody"><div class="tableWrap"><table class="table"><thead><tr><th>Specialist function</th><th>Requirement</th><th>Minimum</th><th>Current</th><th>Status</th></tr></thead><tbody>${specs.map(sr=>{const required=sr.kind==='compulsory';const status=sr.met?(required?stateBadge('ok','Meets'):stateBadge('ok','Available')):(sr.status==='warn'||sr.status==='unmapped'||sr.status==='na'?stateBadge('warn','Review data'):required?stateBadge('missing','Gap'):stateBadge('warn','Optional gap'));return `<tr><td><b>${esc(sr.label||sr.role?.name||sr.role)}</b>${sr.note?`<div class="small">${esc(sr.note)}</div>`:''}</td><td>${required?'Required':'Optional'}</td><td>${sr.min}</td><td>${sr.count}</td><td>${status}</td></tr>`}).join('')}</tbody></table></div></div></details>`:'';
+ const qualifiedHtml=`<details class="collapseSection" open><summary>Qualified operational members <span class="small">${qual.length} member(s)</span></summary><div class="collapseBody">${qual.length?`<div class="tableWrap"><table class="table"><thead><tr><th>Name</th><th>Status</th><th>Qualification state</th></tr></thead><tbody>${qual.map(m=>{const level=highestQualificationForStrand(m,s);return `<tr class="clickrow" data-member="${m.id}"><td>${esc(m.name)}${level?` <span class="small">— ${esc(level.label)}</span>`:''}</td><td>${esc(m.status)}</td><td>${stateBadge(evalEntityMember(m,s).s)}</td></tr>`}).join('')}</tbody></table></div>`:'<div class="notice warning">No operational member currently satisfies the individual qualification rule using the available D4H mappings.</div>'}</div></details>`;
+ const unqualifiedHtml=`<details class="collapseSection" ><summary>Unqualified operational members <span class="small">${unqual.length} member(s)</span></summary><div class="collapseBody">${unqual.length?`${gapSummary?`<div class="gapSummary"><b>Missing qualification summary</b><div class="small" style="margin:3px 0 8px">Number of unqualified operational members missing each requirement.</div><div class="missingList">${gapSummary}</div></div>`:''}<div class="tableWrap"><table class="table"><thead><tr><th>Name</th><th>Missing qualification(s)</th></tr></thead><tbody>${gaps.map(({m,missing})=>`<tr class="clickrow" data-member="${m.id}"><td><b>${esc(m.name)}</b></td><td>${missing.length?missing.map(x=>`<span class="missingChip">${esc(x)}</span>`).join(' '):'<span class="small">Qualification data requires review</span>'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="notice">All operational members satisfy the individual qualification rule for this strand.</div>'}</div></details>`;
+ box.className='card';box.innerHTML=`<div class="sectionTitle" style="margin-top:0"><div><h2>${esc(s.name)}</h2><div class="small">${qual.length} of ${operational.length} operational members satisfy the individual qualification rule for this strand</div></div>${stateBadge(st.s,st.s==='ok'?'Meets minimum':st.s==='warn'?'Review data':'Below minimum')}</div>${reqHtml}${specialistHtml}${qualifiedHtml}${unqualifiedHtml}`;
+ $$('#strandDetail [data-member]').forEach(el=>el.onclick=()=>{currentMember=+el.dataset.member;showView('members');renderMembers()})
+}
+function ruleText(rule){if(typeof rule==='string')return rule;if(rule.any)return 'Any of: '+rule.any.map(x=>typeof x==='string'?x:'('+ruleText(x)+')').join(' / ');if(rule.all)return 'All of: '+rule.all.map(x=>typeof x==='string'?x:'('+ruleText(x)+')').join(' + ');return ''}
+function renderMembers(){
+ const q=norm($('#memberSearch').value);const list=members.filter(m=>!q||norm(m.name).includes(q));$('#memberList').innerHTML=list.length?list.map(m=>`<div class="memberItem ${m.id===currentMember?'active':''}" data-id="${m.id}"><div class="memberName">${esc(m.name)}</div><div class="small">${esc(m.status)}</div></div>`).join(''):'<div class="empty">No members</div>';
+ $$('#memberList .memberItem').forEach(x=>x.onclick=()=>{currentMember=+x.dataset.id;renderMembers()});renderMemberDetail();
+}
+function renderMemberDetail(){const box=$('#memberDetail'),m=members.find(x=>x.id===currentMember);if(!m){box.className='card empty';box.textContent='Select a team member.';return}box.className='card';box.innerHTML=`<div class="sectionTitle" style="margin-top:0"><div><h2>${esc(m.name)}</h2><div class="small">${esc(m.status)}</div></div></div><h3>Capability status</h3><div class="strandGrid" style="grid-template-columns:repeat(2,minmax(0,1fr))">${config.strands.map(s=>{const st=evalEntityMember(m,s);return `<div class="req"><div class="reqHead"><div class="reqTitle">${esc(s.name)}</div>${stateBadge(st.s)}</div><button class="btn" data-memberstrand="${s.id}" style="margin-top:9px;padding:7px 9px">Show requirements</button></div>`}).join('')}</div><h3 style="margin-top:16px">Specialist roles</h3><div class="strandGrid" style="grid-template-columns:repeat(2,minmax(0,1fr))">${config.roles.map(r=>{const st=evalEntityMember(m,r);return `<div class="req"><div class="reqHead"><div class="reqTitle">${esc(r.name)}</div>${stateBadge(st.s)}</div></div>`}).join('')}</div><div id="memberReqDetail"></div>`;
+ $$('#memberDetail [data-memberstrand]').forEach(b=>b.onclick=()=>renderMemberRequirement(m,config.strands.find(s=>s.id===b.dataset.memberstrand)));
+}
+function evidenceText(ev){if(ev.children)return ev.children.map(evidenceText).join(' | ');return `${ev.token}: ${ev.column?`${ev.value||'blank'} (${ev.label||ev.s})`:'no matching column'}`}
+function renderMemberRequirement(m,s){const tgt=$('#memberReqDetail');tgt.innerHTML=`<h3 style="margin-top:18px">${esc(s.name)} requirements for ${esc(m.name)}</h3>${s.requirements.map(r=>{const ev=evalReq(m,r);return `<div class="req"><div class="reqHead"><div><div class="reqTitle">${esc(r.label)}</div><div class="reqMeta">${esc(r.kind)} • team minimum ${r.min||s.minTeam||''}</div></div>${stateBadge(ev.s)}</div><div class="evidence">${esc(evidenceText(ev))}</div></div>`}).join('')}`;tgt.scrollIntoView({behavior:'smooth',block:'nearest'})}
+function syncDeploymentMetaFromUI(){deploymentMeta={name:$('#depName')?.value||'',date:$('#depDate')?.value||'',agency:$('#depAgency')?.value||'',notes:$('#depNotes')?.value||''}}
+function writeDeploymentMetaToUI(){if($('#depName'))$('#depName').value=deploymentMeta.name||'';if($('#depDate'))$('#depDate').value=deploymentMeta.date||'';if($('#depAgency'))$('#depAgency').value=deploymentMeta.agency||'';if($('#depNotes'))$('#depNotes').value=deploymentMeta.notes||''}
+function renderDeployment(){
+ writeDeploymentMetaToUI();
+ const templates=config.deploymentTemplates||[];const ts=$('#deploymentTemplate');
+ if(ts){const prior=ts.value;ts.innerHTML='<option value="">Custom deployment</option>'+templates.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('');if(templates.some(t=>t.id===prior))ts.value=prior}
+ const q=norm($('#deployMemberSearch').value);const list=members.filter(m=>!q||norm(m.name).includes(q));$('#deployMembers').innerHTML=list.map(m=>`<div class="checkline"><input type="checkbox" id="dm${m.id}" data-mid="${m.id}" ${attendeeIds.has(m.id)?'checked':''}><label for="dm${m.id}"><b>${esc(m.name)}</b><div class="small">${esc(m.status)}</div>${attendeeIds.has(m.id)?`<select class="memberTeamSelect" data-team-member="${m.id}"><option value="">Unassigned crew</option>${deploymentTeams.map(t=>`<option value="${t.id}" ${memberTeams[m.id]===t.id?'selected':''}>${esc(t.name)}</option>`).join('')}</select>`:''}</label></div>`).join('')||'<div class="empty">Load a CSV first</div>';
+ $$('#deployMembers [data-mid]').forEach(c=>c.onchange=()=>{if(c.checked)attendeeIds.add(+c.dataset.mid);else{attendeeIds.delete(+c.dataset.mid);delete memberTeams[c.dataset.mid];Object.keys(crewAssignments).forEach(k=>crewAssignments[k]=crewAssignments[k].map(v=>String(v)===String(c.dataset.mid)?'':v))}renderDeployment()});
+ $$('#deployMembers [data-team-member]').forEach(sel=>sel.onchange=()=>{memberTeams[sel.dataset.teamMember]=sel.value;renderDeploymentResults()});
+ const ents=allEntities();$('#deployRequirements').innerHTML=ents.map(e=>`<div class="checkline"><input type="checkbox" id="dn${e.id}" data-need="${e.id}" ${selectedNeeds.has(e.id)?'checked':''}><label for="dn${e.id}"><b>${esc(e.name)}</b><div class="small">${e.type==='strand'?'Capability strand':'Specialist / deployment role'}</div></label></div>`).join('');
+ $$('#deployRequirements [data-need]').forEach(c=>c.onchange=()=>{if(c.checked)selectedNeeds.add(c.dataset.need);else{selectedNeeds.delete(c.dataset.need);delete crewAssignments[c.dataset.need]}$('#deploymentTemplate').value='';updateTemplateDescription();renderDeploymentResults()});updateTemplateDescription();renderDeploymentResults();
+}
+function updateTemplateDescription(){const id=$('#deploymentTemplate')?.value;const t=(config.deploymentTemplates||[]).find(x=>x.id===id);$('#templateDescription').textContent=t?t.description:'Templates are planning presets and remain editable. Select a template then choose Apply template.'}
+function requirementGapDetails(e,pool){return e.requirements.filter(r=>r.kind!=='recommended').map(r=>{const q=qualifiedForReq(r,pool),unmapped=pool.length?pool.every(m=>evalReq(m,r).s==='unmapped'):false,min=r.min||e.minTeam||0;return {r,count:q.length,min,unmapped,q}})}
+function roleSlotCount(e){const compulsory=e.requirements.filter(r=>r.kind!=='recommended');return compulsory.length?Math.max(...compulsory.map(r=>r.min||1)):1}
+function teamPool(teamId){return members.filter(m=>attendeeIds.has(m.id)&&memberTeams[m.id]===teamId)}
+function renderCrewBoard(ents){
+ const box=$('#crewBoard'); if(!deploymentTeams.length){box.innerHTML='<div class="empty">Add a crew/team to organise attendees.</div>';return}
+ box.innerHTML=deploymentTeams.map((t,idx)=>{const pool=teamPool(t.id);const caps=ents.filter(e=>e.type==='strand').map(e=>{const st=entityStatus(e,pool);return `<span class="teamCap ${st.s}">${esc(e.name)}: ${st.qualified}/${st.min}</span>`}).join('');return `<div class="teamCard"><div class="teamHead"><input class="teamNameInput" data-team-name="${t.id}" value="${esc(t.name)}"><button class="btn danger noPrint" data-remove-team="${t.id}" style="padding:6px 8px" ${deploymentTeams.length===1?'disabled':''}>Remove</button></div><div class="small">${pool.length} member(s)</div><div class="teamMembers">${pool.length?pool.map(m=>`<div class="teamMember"><b>${esc(m.name)}</b><select data-move-member="${m.id}"><option value="">Move to…</option>${deploymentTeams.filter(x=>x.id!==t.id).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}<option value="__none">Unassigned</option></select></div>`).join(''):'<div class="small">No attendees assigned.</div>'}</div><div class="teamCaps">${caps||'<span class="small">Select capability strands to assess this crew.</span>'}</div></div>`}).join('');
+ $$('[data-team-name]').forEach(i=>i.onchange=()=>{const t=deploymentTeams.find(x=>x.id===i.dataset.teamName);if(t)t.name=i.value||'Crew';renderDeployment()});
+ $$('[data-remove-team]').forEach(b=>b.onclick=()=>{const id=b.dataset.removeTeam;if(deploymentTeams.length<=1)return;deploymentTeams=deploymentTeams.filter(t=>t.id!==id);Object.keys(memberTeams).forEach(mid=>{if(memberTeams[mid]===id)memberTeams[mid]=''});renderDeployment()});
+ $$('[data-move-member]').forEach(sel=>sel.onchange=()=>{memberTeams[sel.dataset.moveMember]=sel.value==='__none'?'':sel.value;renderDeployment()});
+}
+function renderEquipmentChecklist(){const outRegion=selectedNeeds.has('out_region');const items=(config.deploymentChecklist||[]).filter(x=>!x.outRegion||outRegion);$('#equipmentChecklist').innerHTML=items.map(i=>{const st=equipmentState[i.id]||{};return `<div class="equipItem"><input type="checkbox" data-equip="${i.id}" ${st.checked?'checked':''}><div class="grow"><b>${esc(i.label)}</b><div class="small">${esc(i.group||'')}</div><textarea data-equip-note="${i.id}" placeholder="Notes / asset / quantity">${esc(st.note||'')}</textarea></div></div>`}).join('')||'<div class="small">No checklist items configured.</div>';$$('[data-equip]').forEach(c=>c.onchange=()=>{equipmentState[c.dataset.equip]=equipmentState[c.dataset.equip]||{};equipmentState[c.dataset.equip].checked=c.checked;renderDeploymentRisk()});$$('[data-equip-note]').forEach(t=>t.oninput=()=>{equipmentState[t.dataset.equipNote]=equipmentState[t.dataset.equipNote]||{};equipmentState[t.dataset.equipNote].note=t.value})}
+function renderDeploymentRisk(){const pool=members.filter(m=>attendeeIds.has(m.id));const ents=allEntities().filter(e=>selectedNeeds.has(e.id));const statuses=ents.map(e=>entityStatus(e,pool));const capGap=statuses.some(st=>st.s==='bad'), review=statuses.some(st=>st.s==='warn');const visibleChecklist=(config.deploymentChecklist||[]).filter(x=>!x.outRegion||selectedNeeds.has('out_region'));const checklistMissing=visibleChecklist.some(i=>!(equipmentState[i.id]||{}).checked);const banner=$('#deploymentRisk');if(!pool.length){banner.className='riskBanner warn';banner.textContent='No attendees selected.';return}if(capGap){banner.className='riskBanner bad';banner.textContent='Capability gap: one or more selected deployment requirements do not meet the mapped minimums.';return}if(review||checklistMissing){banner.className='riskBanner warn';banner.textContent='Review required: qualification data/mapping or equipment/logistics checks remain incomplete.';return}banner.className='riskBanner ok';banner.textContent='Mapped personnel requirements and selected readiness checklist items are complete. Final deployment authority remains with the tasking/command arrangements.'}
+function renderDeploymentResults(){const pool=members.filter(m=>attendeeIds.has(m.id));$('#attendingCount').textContent=`${pool.length} selected`;const ents=allEntities().filter(e=>selectedNeeds.has(e.id));
+ const statuses=ents.map(e=>({e,st:entityStatus(e,pool)}));const ready=statuses.filter(x=>x.st.s==='ok').length, review=statuses.filter(x=>x.st.s==='warn').length, gap=statuses.filter(x=>x.st.s!=='ok'&&x.st.s!=='warn').length;
+ $('#deploySummary').innerHTML=`<div class="summaryBox"><div class="n">${pool.length}</div><div class="t">ATTENDING</div></div><div class="summaryBox"><div class="n">${ready}</div><div class="t">REQUIREMENTS MET</div></div><div class="summaryBox"><div class="n">${review}</div><div class="t">REVIEW / DATA GAP</div></div><div class="summaryBox"><div class="n">${gap}</div><div class="t">CAPABILITY GAPS</div></div>`;
+ $('#deployCoverage').innerHTML=ents.length?statuses.map(({e,st})=>{const details=requirementGapDetails(e,pool), reqGaps=details.filter(x=>x.count<x.min), cls=st.s==='ok'?'ok':st.s==='warn'?'warn':'bad';return `<div class="covCard ${cls}"><div class="small">${esc(e.name)}</div><div class="covNum">${st.qualified}</div><div>${st.s==='ok'?'Coverage meets mapped minimum':st.s==='warn'?'Review mapping / data gaps':'Coverage gap'}</div>${reqGaps.length?`<div class="gapList">${reqGaps.map(x=>`<div class="gapItem"><span>${esc(x.r.label)}</span><b>${x.unmapped?'Not mapped':`${x.count}/${x.min}`}</b></div>`).join('')}</div>`:'<div class="small" style="margin-top:6px">All compulsory mapped requirements meet minimums.</div>'}</div>`}).join(''):'<div class="empty" style="grid-column:1/-1">Select one or more requirements.</div>';
+ renderCrewBoard(ents);
+ $('#assignmentGrid').innerHTML=ents.filter(e=>e.type!=='strand').length?ents.filter(e=>e.type!=='strand').map(e=>{const q=qualifiedForEntity(e,pool);const slots=roleSlotCount(e);crewAssignments[e.id]=crewAssignments[e.id]||Array(slots).fill('');while(crewAssignments[e.id].length<slots)crewAssignments[e.id].push('');if(crewAssignments[e.id].length>slots)crewAssignments[e.id]=crewAssignments[e.id].slice(0,slots);return `<div class="assignment"><b>${esc(e.name)}</b><div class="small">${q.length} qualified candidate(s) • ${slots} required slot(s)</div><div class="slotGrid">${Array.from({length:slots},(_,i)=>`<div class="slot"><label>Slot ${i+1}</label><select data-role="${e.id}" data-slot="${i}"><option value="">Unassigned</option>${q.map(m=>`<option value="${m.id}" ${String(crewAssignments[e.id][i])===String(m.id)?'selected':''}>${esc(m.name)}</option>`).join('')}</select></div>`).join('')}</div></div>`}).join(''):'<div class="small">Select specialist/deployment roles to assign named positions.</div>';
+ $$('#assignmentGrid select[data-role]').forEach(sel=>sel.onchange=()=>{const id=sel.dataset.role,i=+sel.dataset.slot;crewAssignments[id]=crewAssignments[id]||[];crewAssignments[id][i]=sel.value;highlightDuplicateAssignments()});highlightDuplicateAssignments();
+ renderEquipmentChecklist();renderDeploymentRisk();
+ if(!pool.length||!ents.length){$('#deployMatrix').innerHTML='<div class="empty">Select attendees and requirements to build the matrix.</div>';return}
+ $('#deployMatrix').innerHTML=`<div class="tableWrap"><table class="table"><thead><tr><th>Member</th><th>Crew</th>${ents.map(e=>`<th>${esc(e.name)}</th>`).join('')}</tr></thead><tbody>${pool.map(m=>`<tr><td><b>${esc(m.name)}</b></td><td>${esc(deploymentTeams.find(t=>t.id===memberTeams[m.id])?.name||'Unassigned')}</td>${ents.map(e=>`<td>${stateBadge(evalEntityMember(m,e).s)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function highlightDuplicateAssignments(){const used={};Object.values(crewAssignments).flat().filter(Boolean).forEach(id=>used[id]=(used[id]||0)+1);$$('#assignmentGrid select[data-role]').forEach(sel=>{sel.style.borderColor=sel.value&&used[sel.value]>1?'var(--warn)':'var(--line)';sel.title=sel.value&&used[sel.value]>1?'This person is assigned to more than one specialist slot':''})}
+function deploymentPlan(){syncDeploymentMetaFromUI();return {format:'NZRT Deployment Plan',version:1,created:new Date().toISOString(),meta:deploymentMeta,templateId:$('#deploymentTemplate')?.value||'',attendeeNames:members.filter(m=>attendeeIds.has(m.id)).map(m=>m.name),selectedNeeds:[...selectedNeeds],teams:deploymentTeams,memberTeamsByName:Object.fromEntries(members.filter(m=>attendeeIds.has(m.id)).map(m=>[m.name,memberTeams[m.id]||''])),crewAssignmentsByName:Object.fromEntries(Object.entries(crewAssignments).map(([k,v])=>[k,v.map(id=>members.find(m=>String(m.id)===String(id))?.name||'')])),equipmentState}}
+function exportDeployment(){const blob=new Blob([JSON.stringify(deploymentPlan(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=((deploymentMeta.name||'nzrt-deployment').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||'nzrt-deployment')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function loadDeploymentPlan(obj){if(!obj||obj.format!=='NZRT Deployment Plan')throw new Error('Not an NZRT Deployment Plan JSON file');deploymentMeta=obj.meta||{};selectedNeeds=new Set((obj.selectedNeeds||[]).filter(id=>allEntities().some(e=>e.id===id)));deploymentTeams=Array.isArray(obj.teams)&&obj.teams.length?obj.teams:[{id:'team1',name:'Alpha'}];equipmentState=obj.equipmentState||{};attendeeIds.clear();memberTeams={};(obj.attendeeNames||[]).forEach(name=>{const m=members.find(x=>x.name===name);if(m){attendeeIds.add(m.id);memberTeams[m.id]=(obj.memberTeamsByName||{})[name]||''}});crewAssignments={};Object.entries(obj.crewAssignmentsByName||{}).forEach(([role,names])=>crewAssignments[role]=names.map(name=>members.find(m=>m.name===name)?.id??''));renderDeployment();if(obj.templateId&&$('#deploymentTemplate'))$('#deploymentTemplate').value=obj.templateId;updateTemplateDescription()}
+function allConfigTokens(){const out=[];function walk(x){if(typeof x==='string')out.push(x);else if(x?.any)x.any.forEach(walk);else if(x?.all)x.all.forEach(walk)}allEntities().forEach(e=>e.requirements.forEach(r=>walk(r.rule)));return [...new Set(out)]}
+function unmappedTokens(){if(!headers.length)return allConfigTokens();return allConfigTokens().filter(t=>findColumn(t)<0)}
+function renderSettings(){const gaps=unmappedTokens();$('#configInfo').textContent=`${config.strands.length} strands and ${config.roles.length} specialist/deployment roles configured.`;$('#mappingGaps').innerHTML=headers.length?(gaps.length?`<div class="small">These configured aliases do not currently match a D4H CSV column:</div><div style="margin-top:8px">${gaps.slice(0,80).map(x=>`<span class="badge na" style="margin:3px">${esc(x)}</span>`).join('')}${gaps.length>80?`<div class="small">…and ${gaps.length-80} more.</div>`:''}</div>`:'<div class="notice">All configured aliases have a potential CSV match.</div>'):'<div class="small">Load a CSV to check framework-to-D4H mappings.</div>'}
+function showView(id){$$('.view').forEach(v=>v.classList.toggle('active',v.id===id));$$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===id));if(id==='deployment')renderDeployment();if(id==='settings')renderSettings()}
+$$('.tab').forEach(t=>t.onclick=()=>showView(t.dataset.view));
+$('#strandSelect').onchange=renderStrand;$('#memberSearch').oninput=renderMembers;$('#deployMemberSearch').oninput=renderDeployment;
+[$('#csvInputTop'),$('#csvInputSettings')].forEach(i=>i.onchange=()=>i.files[0]&&importCSV(i.files[0]));
+$('#expiryDays').onchange=renderAll;$('#printStrand').onclick=()=>window.print();
+['depName','depDate','depAgency','depNotes'].forEach(id=>{const el=$('#'+id);if(el)el.oninput=syncDeploymentMetaFromUI});
+$('#addTeam').onclick=()=>{const n=deploymentTeams.length+1;deploymentTeams.push({id:'team'+Date.now(),name:['Alpha','Bravo','Charlie','Delta','Echo','Foxtrot'][deploymentTeams.length]||('Crew '+n)});renderDeployment()};
+$('#newDeployment').onclick=()=>{if(!confirm('Clear the current deployment plan?'))return;attendeeIds.clear();selectedNeeds.clear();crewAssignments={};deploymentTeams=[{id:'team1',name:'Alpha'}];memberTeams={};equipmentState={};deploymentMeta={name:'',date:'',agency:'',notes:''};$('#deploymentTemplate').value='';renderDeployment()};
+$('#saveDeployment').onclick=exportDeployment;$('#printDeployment').onclick=()=>window.print();$('#loadDeployment').onchange=()=>{const f=$('#loadDeployment').files[0];if(!f)return;loadText(f,t=>{try{loadDeploymentPlan(JSON.parse(t))}catch(e){alert('Could not load deployment plan: '+e.message)}})};
+$('#selectAllOperational').onclick=()=>{members.filter(m=>/operational/i.test(m.status)).forEach(m=>attendeeIds.add(m.id));renderDeployment()};$('#clearAttendees').onclick=()=>{attendeeIds.clear();crewAssignments={};memberTeams={};renderDeployment()};$('#clearSkills').onclick=()=>{selectedNeeds.clear();crewAssignments={};$('#deploymentTemplate').value='';renderDeployment()};$('#deploymentTemplate').onchange=updateTemplateDescription;$('#applyTemplate').onclick=()=>{const t=(config.deploymentTemplates||[]).find(x=>x.id===$('#deploymentTemplate').value);if(!t)return;selectedNeeds=new Set(t.needs||[]);crewAssignments={};renderDeployment()};
+$('#clearData').onclick=()=>{headers=[];members=[];colMap.clear();currentMember=null;attendeeIds.clear();selectedNeeds.clear();crewAssignments={};deploymentTeams=[{id:"team1",name:"Alpha"}];memberTeams={};equipmentState={};$('#fileStatus').textContent='No CSV loaded';$('#importInfo').textContent='No CSV loaded.';renderAll()};
+$('#exportConfig').onclick=()=>{const blob=new Blob([JSON.stringify(config,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nzrt-capability-framework-config.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$('#configInput').onchange=()=>{const f=$('#configInput').files[0];if(!f)return;loadText(f,t=>{try{const c=JSON.parse(t);if(!Array.isArray(c.strands)||!Array.isArray(c.roles))throw new Error('Expected strands and roles arrays');config=c;renderAll();alert('Framework configuration loaded.')}catch(e){alert('Could not load framework JSON: '+e.message)}})};
+$('#resetConfig').onclick=()=>{config=structuredCloneSafe(builtInConfig);$('#expiryDays').value=config.meta.expiryWarningDays||90;renderAll()};
+function modal(html,title='Status calculation'){$('#modalTitle').textContent=title;$('#modalBody').innerHTML=html;$('#modalBack').classList.add('show')}
+$('#demoHelp').onclick=()=>modal(`<p>This prototype evaluates each capability requirement against matching D4H columns. It supports <b>OR</b> alternatives, <b>AND</b> combinations, and <b>team-composition minimums</b> (for example, 8 Swift Water operational members of whom at least 2 must be Technicians).</p><p><b>Yes</b> is treated as current. Dates are treated as validity/expiry dates. A past date is expired; a date within the warning window is shown amber. <b>?</b>, <b>-</b> and blank are all treated as not held.</p><p>Where the May 2026 framework names a qualification that is not present in the CSV, the app shows <b>Not mapped</b> rather than treating another course as equivalent.</p><p>Deployment mode evaluates only the members you select as attending. Deployment templates provide editable planning presets, exact mapped requirement gaps, qualified candidate pools and assignable specialist-role slots.</p>`);
+$('#modalClose').onclick=()=>$('#modalBack').classList.remove('show');$('#modalBack').onclick=e=>{if(e.target===$('#modalBack'))$('#modalBack').classList.remove('show')};
+renderAll();
+})();
+</script>
 </body>
 </html>
